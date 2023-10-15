@@ -4,6 +4,5 @@ namespace SO
 {
     public abstract class PieceSO : ScriptableObject
     {
-        
     }
 }
