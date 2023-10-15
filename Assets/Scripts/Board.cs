@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using WIP;
 
 public class Board: MonoBehaviour
 {
     [SerializeField] private GameObject _cellPrefab;
-    private static List<Cell> _cells;
+    [SerializeField] private Transform _pieceRoot;
+    
+    public static List<Cell> Cells = new();
 
     private const int BoardSize = 8;
 
@@ -25,9 +25,21 @@ public class Board: MonoBehaviour
 
                 obj.name = $"{(char)('A' + column)}{row + 1}";
                 cell.Coordinates = new Vector2Int(column, row);
+                Cells.Add(cell);
             }
         }
     }
+
+    private void InitializeBaseSetup()
+    {
+        List<Piece> pieces = new (_pieceRoot.GetComponentsInChildren<Piece>());
+
+        foreach (Piece item in pieces)
+        {
+            
+        }
+    }
+    
     /* public static Cell FindCell(Vector2Int coordinates)
     {
         foreach (Cell cell in _cells)
