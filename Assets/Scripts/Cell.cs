@@ -1,14 +1,10 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
+using Managers;
 
 public class Cell: MonoBehaviour
 {
     public Vector2Int Coordinates { get; set; }
-    public Piece Occupant
-    {
-        get => _occupant;
-        set => AttributeOccupant(value);
-    }
+    public Piece Occupant { get; set; }
     public bool IsOccupied => Occupant != null;
 
     private Piece _occupant;
@@ -24,23 +20,13 @@ public class Cell: MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (IsOccupied && _collider.enabled)
-            _collider.enabled = false;
-        else if (!IsOccupied && !_collider.enabled)
-            _collider.enabled = true;
+        _collider.enabled = !IsOccupied;
     }
 
     private void OnMouseDown()
     {
         char columnLetter = (char)('A' + Coordinates.x);
-        Debug.Log($"Selected: Cell {columnLetter}{Coordinates.y + 1}");
-    }
-
-    private static void AttributeOccupant(Piece piece)
-    {
-        foreach (Cell cell in Board.Cells)
-        {
-            // if (cell.Coordinates )
-        }
+        Debug.Log($"Selected Destination Cell : {columnLetter}{Coordinates.y + 1}");
+        GameManager.SelectDestinationCell(this);
     }
 }
