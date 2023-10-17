@@ -10,6 +10,7 @@ namespace SO
                 Destroy(destination.Occupant.gameObject);
                 
             reference.CurrentCell = destination;
+            reference.CurrentCell.Occupant = reference;
             reference.UpdatePosition();
         }
     }

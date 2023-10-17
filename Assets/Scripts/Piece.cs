@@ -13,7 +13,14 @@ public class Piece: MonoBehaviour
     private void OnMouseDown()
     {
         Debug.Log($"Selected Piece: {_side} {_blueprintSO.name}");
-        GameManager.SelectPieceToPlay(this);
+        if (GameManager.currentPlayerTurn != _side)
+        {
+            GameManager.SelectDestinationCell(CurrentCell);
+        }
+        else
+        {
+            GameManager.SelectPieceToPlay(this);
+        }
     }
 
     public void Move(Cell destinationCell)
@@ -24,6 +31,6 @@ public class Piece: MonoBehaviour
     public void UpdatePosition()
     {
         Vector3 newPosition = new(CurrentCell.Coordinates.y, 0, CurrentCell.Coordinates.x);
-        gameObject.transform.Translate(newPosition);
+        gameObject.transform.position = newPosition;
     }
 }
