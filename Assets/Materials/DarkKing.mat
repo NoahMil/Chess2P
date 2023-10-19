@@ -108,7 +108,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
-    - _EnableFresnel: 1
+    - _EnableFresnel: 0
     - _EnvironmentReflections: 1
     - _FresnelSpeed: 1.75
     - _GlossMapScale: 0
