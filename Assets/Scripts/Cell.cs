@@ -1,32 +1,21 @@
-﻿using UnityEngine;
-using Managers;
+﻿using Unity.VisualScripting;
+using UnityEngine;
 
-public class Cell: MonoBehaviour
+public class Cell
 {
-    public Vector2Int Coordinates { get; set; }
-    public Piece Occupant { get; set; }
-    public bool IsOccupied => Occupant != null;
+    private GameObject _cellPrefab;
+    private Coordinates _coordinates;
+    private Piece _occupant = null;
 
-    private Piece _occupant;
-    private Vector3 _worldPos;
-    private Collider _collider;
+    public Coordinates Coordinates => _coordinates;
+    public Piece Occupant => _occupant;
+    public bool IsOccupied => _occupant != null;
 
-    private void Awake()
+    public Cell(GameObject prefab, Transform root, int column, int row)
     {
-        _worldPos = transform.position;
-        _collider = gameObject.GetComponent<Collider>();
-        Coordinates = new Vector2Int((int)_worldPos.x, (int)_worldPos.z);
-    }
+        _coordinates = new Coordinates(column, row);
 
-    private void FixedUpdate()
-    {
-        _collider.enabled = !IsOccupied;
-    }
-
-    private void OnMouseDown()
-    {
-        char columnLetter = (char)('A' + Coordinates.x);
-        Debug.Log($"Selected Destination Cell : {columnLetter}{Coordinates.y + 1}");
-        GameManager.SelectDestinationCell(this);
+        GameObject newObject = Object.Instantiate(prefab, _coordinates.World, Quaternion.identity, root);
+        // BoardCell cell = newObject.GetComponent<BoardCell>();
     }
 }
