@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class BoardPiece: MonoBehaviour
+public class PieceBehaviour: MonoBehaviour
 {
     [SerializeField] private Side _side;
 
@@ -14,6 +14,7 @@ public class BoardPiece: MonoBehaviour
 
     private void OnMouseDown()
     {
+        
     }
 
     public void Highlight(bool enable)
