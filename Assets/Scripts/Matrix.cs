@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using Pieces;
+﻿using UnityEngine;
 
 public class Matrix
 {
