@@ -3,9 +3,8 @@ using UnityEngine;
 
 public class PieceBehaviour: MonoBehaviour
 {
-    [SerializeField] private Side _side;
-
     private MeshRenderer _mesh;
+    private static readonly int EnableFresnel = Shader.PropertyToID("_enableFresnel");
 
     private void Awake()
     {
@@ -20,6 +19,6 @@ public class PieceBehaviour: MonoBehaviour
     public void Highlight(bool enable)
     {
         int value = Convert.ToInt32(enable);
-        _mesh.material.SetFloat("_enableFresnel", value);
+        _mesh.material.SetFloat(EnableFresnel, value);
     }
 }

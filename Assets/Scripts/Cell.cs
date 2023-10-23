@@ -9,6 +9,10 @@ public class Cell
     public Cell(GameObject prefab, Transform root, int column, int row)
     {
         Coordinates = new Coordinates(column, row);
-        Object.Instantiate(prefab, Coordinates.World, Quaternion.identity, root);
+        GameObject cell = Object.Instantiate(prefab, Coordinates.World, Quaternion.identity, root);
+        CellBehaviour cellBehaviour = cell.GetComponent<CellBehaviour>();
+        
+        cellBehaviour.SetInternalCell(this);
+        cell.name = (char)('A' + column) + (row + 1).ToString();
     }
 }

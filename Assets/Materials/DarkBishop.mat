@@ -134,7 +134,7 @@ Material:
     - _Surface: 0
     - _WorkflowMode: 1
     - _ZWrite: 1
-    - _enableFresnel: 1
+    - _enableFresnel: 0
     - _fresnelSpeed: 1
     - _maxFresnel: 10
     - _minFresnel: 1
