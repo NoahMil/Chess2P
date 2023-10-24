@@ -4,7 +4,7 @@ namespace Pieces
 {
     public class Pawn : Piece
     {
-        public Pawn(GameObject prefab, Transform root, Coordinates pos, Side side) : base(prefab, root, pos, side) {}
+        public Pawn(Cell cell, GameObject prefab, Transform root, Side side) : base(cell, prefab, root, side) {}
         
         public override void Move()
         {

@@ -4,7 +4,7 @@ namespace Pieces
 {
     public class Rook : Piece
     {
-        public Rook(GameObject prefab, Transform root, Coordinates pos, Side side) : base(prefab, root, pos, side) {}
+        public Rook(Cell cell, GameObject prefab, Transform root, Side side) : base(cell, prefab, root, side) {}
         
         public override void Move()
         {

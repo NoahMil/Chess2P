@@ -11,11 +11,6 @@ public class PieceBehaviour: MonoBehaviour
         _mesh = GetComponent<MeshRenderer>();
     }
 
-    private void OnMouseDown()
-    {
-        
-    }
-
     public void Highlight(bool enable)
     {
         int value = Convert.ToInt32(enable);

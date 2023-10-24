@@ -4,7 +4,7 @@ namespace Pieces
 {
     public class Queen : Piece
     {
-        public Queen(GameObject prefab, Transform root, Coordinates pos, Side side) : base(prefab, root, pos, side) {}
+        public Queen(Cell cell, GameObject prefab, Transform root, Side side) : base(cell, prefab, root, side) {}
         
         public override void Move()
         {

@@ -135,8 +135,8 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     - _enableFresnel: 0
-    - _fresnelSpeed: 1
-    - _maxFresnel: 10
+    - _fresnelSpeed: 1.25
+    - _maxFresnel: 3
     - _minFresnel: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}

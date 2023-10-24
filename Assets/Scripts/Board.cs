@@ -30,11 +30,10 @@ public class Board: MonoBehaviour
         
         for (int column = 0; column < Matrix.BoardSize; column++)
         {
-            Matrix.GetCell(column, 0).Occupant = Piece.Create("Light" + pieceOrder[column], _piecesRoot, Matrix.GetCell(column, 0).Coordinates);
-            Matrix.GetCell(column, 1).Occupant = Piece.Create("LightPawn", _piecesRoot, Matrix.GetCell(column, 1).Coordinates);
-            
-            Matrix.GetCell(column, 7).Occupant = Piece.Create("Dark" + pieceOrder[column], _piecesRoot, Matrix.GetCell(column, 7).Coordinates);
-            Matrix.GetCell(column, 6).Occupant = Piece.Create("DarkPawn", _piecesRoot, Matrix.GetCell(column, 6).Coordinates);
+            Matrix.GetCell(column, 0).Occupant = Piece.Create("Light" + pieceOrder[column], Matrix.GetCell(column, 0), _piecesRoot);
+            Matrix.GetCell(column, 1).Occupant = Piece.Create("LightPawn", Matrix.GetCell(column, 1), _piecesRoot);
+            Matrix.GetCell(column, 7).Occupant = Piece.Create("Dark" + pieceOrder[column],  Matrix.GetCell(column, 7), _piecesRoot);
+            Matrix.GetCell(column, 6).Occupant = Piece.Create("DarkPawn", Matrix.GetCell(column, 6), _piecesRoot);
         }
     }
 

@@ -7,32 +7,35 @@ namespace Pieces
 {
     public abstract class Piece
     {
+        public PieceBehaviour Behaviour { get; set; }
+        public Side Side { get; set; }
+
         public static Dictionary<string, GameObject> prefabs;
-        private Side _side;
-        
-        protected Piece(GameObject prefab, Transform root, Coordinates pos, Side side)
+
+        protected Piece(Cell cell, GameObject prefab, Transform root, Side side)
         {
             Quaternion rotation = side == Side.Light ? Quaternion.identity : Quaternion.Euler(0, -180, 0);
-            
-            Object.Instantiate(prefab, pos.World, rotation, root);
+            GameObject piece = Object.Instantiate(prefab, cell.Coordinates.World, rotation, root);
+            Behaviour = piece.GetComponent<PieceBehaviour>();
+            Side = side;
         }
 
-        public static Piece Create(string prefabName, Transform root, Coordinates coordinates)
+        public static Piece Create(string prefabName, Cell originCell, Transform root)
         {
             return prefabName switch
             {
-                "LightPawn"   => new Pawn   (prefabs["LightPawn"], root, coordinates, Side.Light),
-                "LightRook"   => new Rook   (prefabs["LightRook"], root, coordinates, Side.Light),
-                "LightKnight" => new Knight (prefabs["LightKnight"], root, coordinates, Side.Light),
-                "LightBishop" => new Bishop (prefabs["LightBishop"], root, coordinates, Side.Light),
-                "LightQueen"  => new Queen  (prefabs["LightQueen"], root, coordinates, Side.Light),
-                "LightKing"   => new King   (prefabs["LightKing"], root, coordinates, Side.Light),
-                "DarkPawn"    => new Pawn   (prefabs["DarkPawn"], root, coordinates, Side.Dark),
-                "DarkRook"    => new Rook   (prefabs["DarkRook"], root, coordinates, Side.Dark),
-                "DarkKnight"  => new Knight (prefabs["DarkKnight"], root, coordinates, Side.Dark),
-                "DarkBishop"  => new Bishop (prefabs["DarkBishop"], root, coordinates, Side.Dark),
-                "DarkQueen"   => new Queen  (prefabs["DarkQueen"], root, coordinates, Side.Dark),
-                "DarkKing"    => new King   (prefabs["DarkKing"], root, coordinates, Side.Dark),
+                "LightPawn"   => new Pawn   (originCell, prefabs["LightPawn"], root, Side.Light),
+                "LightRook"   => new Rook   (originCell, prefabs["LightRook"], root, Side.Light),
+                "LightKnight" => new Knight (originCell, prefabs["LightKnight"], root, Side.Light),
+                "LightBishop" => new Bishop (originCell, prefabs["LightBishop"], root, Side.Light),
+                "LightQueen"  => new Queen  (originCell, prefabs["LightQueen"], root, Side.Light),
+                "LightKing"   => new King   (originCell, prefabs["LightKing"], root, Side.Light),
+                "DarkPawn"    => new Pawn   (originCell, prefabs["DarkPawn"], root, Side.Dark),
+                "DarkRook"    => new Rook   (originCell, prefabs["DarkRook"], root, Side.Dark),
+                "DarkKnight"  => new Knight (originCell, prefabs["DarkKnight"], root, Side.Dark),
+                "DarkBishop"  => new Bishop (originCell, prefabs["DarkBishop"], root, Side.Dark),
+                "DarkQueen"   => new Queen  (originCell, prefabs["DarkQueen"], root, Side.Dark),
+                "DarkKing"    => new King   (originCell, prefabs["DarkKing"], root, Side.Dark),
                 
                 _ => throw new ArgumentOutOfRangeException(prefabName, "Invalid piece name provided for Creation")
             };
