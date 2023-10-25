@@ -44,6 +44,9 @@ public class Board: MonoBehaviour
         foreach (GameObject prefab in _piecesPrefabs)
             Piece.prefabs.Add(prefab.name, prefab);
     }
-    
-    public static void UpdateView() {}
+
+    public static void UpdateView()
+    {
+        
+    }
 }

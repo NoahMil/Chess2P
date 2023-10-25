@@ -1,12 +1,13 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Pieces
 {
     public class Rook : Piece
     {
         public Rook(Cell cell, GameObject prefab, Transform root, Side side) : base(cell, prefab, root, side) {}
-        
-        public override void Move()
+
+        public override List<Cell> GetAvailableMoves(Cell currentCoordinates)
         {
             throw new System.NotImplementedException();
         }

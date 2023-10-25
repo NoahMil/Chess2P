@@ -9,6 +9,7 @@ namespace Pieces
     {
         public PieceBehaviour Behaviour { get; set; }
         public Side Side { get; set; }
+        public bool HasMoved { get; set; }
 
         public static Dictionary<string, GameObject> prefabs;
 
@@ -18,6 +19,7 @@ namespace Pieces
             GameObject piece = Object.Instantiate(prefab, cell.Coordinates.World, rotation, root);
             Behaviour = piece.GetComponent<PieceBehaviour>();
             Side = side;
+            HasMoved = false;
         }
 
         public static Piece Create(string prefabName, Cell originCell, Transform root)
@@ -41,6 +43,6 @@ namespace Pieces
             };
         }
         
-        public abstract void Move();
+        public abstract List<Cell> GetAvailableMoves(Cell currentCoordinates);
     }
 }

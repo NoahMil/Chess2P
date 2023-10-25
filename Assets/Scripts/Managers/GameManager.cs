@@ -1,5 +1,4 @@
-using System;
-using UnityEditor;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Managers
@@ -12,6 +11,8 @@ namespace Managers
         private Side NextTurn => (CurrentPlayerTurn == Side.Light ? Side.Dark : Side.Light);
 
         private static Cell _selection;
+        private static Cell _destination;
+        private static List<Cell> _availableMoves;
         private bool _showedOnce;
 
         private void Awake()
@@ -22,14 +23,20 @@ namespace Managers
 
         private void Update()
         {
-            if (!_showedOnce)
-            {
+            if (!_showedOnce) {
                 Debug.Log($"Player Turn: {CurrentPlayerTurn.ToString()}");
                 _showedOnce = true;
             }
 
             if (Input.GetButtonDown("Fire2"))
                 Unselect();
+        }
+
+        private void FixedUpdate()
+        {
+            if (_selection == null) return;
+
+            _availableMoves = Matrix.GetMoves(_selection);
         }
 
         public static void SelectCell(Cell cell)
@@ -39,8 +46,10 @@ namespace Managers
                 Debug.Log("You can't play an Opponent piece !");
                 return;
             }
+            if (_selection != null) {
+                Unselect();
+            }
 
-            Debug.Log($"Select cell: {cell.Behaviour.name}");
             _selection = cell;
             _selection.Occupant.Behaviour.Highlight(true);
         }
@@ -51,6 +60,7 @@ namespace Managers
             
             _selection.Occupant.Behaviour.Highlight(false);
             _selection = null;
+            _availableMoves = null;
         }
     }
 }

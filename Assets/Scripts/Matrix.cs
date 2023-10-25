@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using Pieces;
+using UnityEngine;
 
 public class Matrix
 {
@@ -28,5 +30,10 @@ public class Matrix
     public static Cell GetCell(int column, int row)
     {
         return Grid[column, row];
+    }
+
+    public static List<Cell> GetMoves(Cell cell)
+    {
+        return cell.Occupant.GetAvailableMoves(cell);
     }
 }
