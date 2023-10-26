@@ -12,16 +12,26 @@ namespace Pieces
             List<Cell> moves = new List<Cell>();
             int currentColumn = currentCell.Coordinates.Columns;
             int currentRow = currentCell.Coordinates.Row;
+            int offset = (Side == Side.Light) ? 1 : -1;
             
-            // First: Get forward cell
+            Cell forward = Matrix.GetCell(currentColumn, currentRow + offset);
+            Cell forwardPush = Matrix.GetCell(currentColumn, currentRow + offset + 1);
+            Cell forwardLeft = Matrix.GetCell(currentColumn - 1, currentRow + offset);
+            Cell forwardRight = Matrix.GetCell(currentColumn + 1, currentRow + offset);
             
-            //      // if (forward cell isn't occupied), add to the list
+            if (!forward.IsOccupied)
+                moves.Add(forward);
             
-            //      // if (check if adjacentCells is occupied by Opponent), add them to list in this case.
+            if (forwardLeft.IsOccupied && forwardLeft.Occupant.Side != Side)
+                moves.Add(forwardLeft);
             
-            //      // if (!piece.HasMoved), check if (cell forward to the initial fowardCell isn't occupied), add the to the list; 
+            if (forwardRight.IsOccupied && forwardRight.Occupant.Side != Side)
+                moves.Add(forwardLeft);
             
-            return null;
+            if (!HasMoved)
+                moves.Add(forwardPush);
+            
+            return moves;
         }
     }
 }

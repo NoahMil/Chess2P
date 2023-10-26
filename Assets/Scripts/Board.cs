@@ -9,19 +9,19 @@ public class Board: MonoBehaviour
     [SerializeField] private Transform _piecesRoot;
     [SerializeField] private List<GameObject> _piecesPrefabs;
     
-    private Matrix _matrix;
     private List<PieceBehaviour> _piecesBehaviours;
 
     private void Start()
     {
         InitializePiecesPrefabs();
-        InitialzeMatrix();
+        InitializeMatrix();
         InitializePieces();
+        ResetCellsTargetsState();
     }
 
-    private void InitialzeMatrix()
+    private void InitializeMatrix()
     {
-        _matrix = new Matrix(_cellPrefab, _cellsRoot);
+        Matrix.Init(_cellPrefab, _cellsRoot);
     }
 
     private void InitializePieces()
@@ -45,6 +45,19 @@ public class Board: MonoBehaviour
             Piece.prefabs.Add(prefab.name, prefab);
     }
 
+    public static void EnableCellsTargets(List<Cell> availableCells)
+    {
+        foreach (Cell cell in availableCells)
+        {
+            cell.Behaviour.IsTargetable(true);
+        }
+    }
+
+    public static void ResetCellsTargetsState()
+    {
+        Matrix.ResetCellsTargetState();
+    }
+    
     public static void UpdateView()
     {
         

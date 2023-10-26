@@ -23,35 +23,49 @@ namespace Managers
 
         private void Update()
         {
-            if (!_showedOnce) {
-                Debug.Log($"Player Turn: {CurrentPlayerTurn.ToString()}");
-                _showedOnce = true;
-            }
-
             if (Input.GetButtonDown("Fire2"))
                 Unselect();
         }
 
         private void FixedUpdate()
         {
+            if (!_showedOnce) {
+                Debug.Log($"Player Turn: {CurrentPlayerTurn.ToString()}");
+                _showedOnce = true;
+            }
+            
             if (_selection == null) return;
-
+            
             _availableMoves = Matrix.GetMoves(_selection);
+            Board.EnableCellsTargets(_availableMoves);
+
+            if (_destination == null) return;
+
+            ResolveMovement(_selection, _destination);
+        }
+
+        private void ResolveMovement(Cell origin, Cell destination)
+        {
+            
         }
 
         public static void SelectCell(Cell cell)
         {
-            if (!cell.IsOccupied) return;
-            if (cell.Occupant.Side != CurrentPlayerTurn) {
-                Debug.Log("You can't play an Opponent piece !");
-                return;
+            if (_selection == null)
+            {
+                if (!cell.IsOccupied) return;
+                if (cell.Occupant.Side != CurrentPlayerTurn) {
+                    Debug.Log("You can't play an Opponent piece !");
+                    return;
+                }
+                _selection = cell;
+                _selection.Occupant.Behaviour.Highlight(true);
             }
-            if (_selection != null) {
-                Unselect();
+            else
+            {
+                _destination = cell;
             }
 
-            _selection = cell;
-            _selection.Occupant.Behaviour.Highlight(true);
         }
 
         public static void Unselect()
