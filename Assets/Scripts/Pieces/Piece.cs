@@ -9,7 +9,7 @@ namespace Pieces
     {
         public PieceBehaviour Behaviour { get; set; }
         public Side Side { get; set; }
-        public bool HasMoved { get; set; }
+        protected bool HasMoved { get; set; }
 
         public static Dictionary<string, GameObject> prefabs;
 

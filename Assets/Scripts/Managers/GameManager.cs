@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace Managers
@@ -8,12 +9,14 @@ namespace Managers
         public static Side CurrentPlayerTurn { get; set; }
         public static bool Checkmate { get; set; }
         
-        private Side NextTurn => (CurrentPlayerTurn == Side.Light ? Side.Dark : Side.Light);
+        private static Side OpponentTurn => (CurrentPlayerTurn == Side.Light ? Side.Dark : Side.Light);
 
-        private static Cell _selection;
+        private static Cell _origin;
         private static Cell _destination;
-        private static List<Cell> _availableMoves;
-        private bool _showedOnce;
+        private static bool _showedOnce;
+
+        private bool _confirmEscape;
+        private float _escapeTimer = 3f;
 
         private void Awake()
         {
@@ -22,59 +25,91 @@ namespace Managers
         }
 
         private void Update()
-        {
-            if (Input.GetButtonDown("Fire2"))
-                Unselect();
-        }
-
-        private void FixedUpdate()
-        {
+        {      
             if (!_showedOnce) {
                 Debug.Log($"Player Turn: {CurrentPlayerTurn.ToString()}");
                 _showedOnce = true;
             }
             
-            if (_selection == null) return;
-            
-            _availableMoves = Matrix.GetMoves(_selection);
-            Board.EnableCellsTargets(_availableMoves);
+            if (Input.GetButtonDown("Fire2"))
+                Unselect();
 
-            if (_destination == null) return;
-
-            ResolveMovement(_selection, _destination);
+            EmergencyEscape(Input.GetKeyDown(KeyCode.Escape));
         }
 
-        private void ResolveMovement(Cell origin, Cell destination)
+        private void EmergencyEscape(bool triggered)
+        {
+            if (triggered && _confirmEscape)
+            {
+                EditorApplication.ExitPlaymode();
+                Application.Quit();
+            }
+            
+            if (triggered) {
+                _confirmEscape = true;
+            }
+
+            if (_escapeTimer <= 0f)
+                _escapeTimer = 3f;
+
+            _escapeTimer -= Time.deltaTime;
+        }
+
+        private static void ResolveMovement()
+        {
+            _origin.Occupant.Behaviour.Highlight(false);
+            if (_destination.IsOccupied && _destination.Occupant.Side == OpponentTurn)
+                Destroy(_destination.Occupant.Behaviour.gameObject);
+
+            _destination.Occupant = _origin.Occupant;
+            _origin.Occupant = null;
+            
+            Board.UpdateView();
+            CheckEndOfGame();
+            ChangeTurn();
+        }
+
+        private static void ChangeTurn()
+        {
+            CurrentPlayerTurn = OpponentTurn;
+            _showedOnce = false;
+            _destination = null;
+            _origin = null;
+        }
+
+        private static void CheckEndOfGame()
         {
             
         }
 
         public static void SelectCell(Cell cell)
         {
-            if (_selection == null)
+            if (_origin == null)
             {
                 if (!cell.IsOccupied) return;
                 if (cell.Occupant.Side != CurrentPlayerTurn) {
                     Debug.Log("You can't play an Opponent piece !");
                     return;
                 }
-                _selection = cell;
-                _selection.Occupant.Behaviour.Highlight(true);
+                _origin = cell;
+                _origin.Occupant.Behaviour.Highlight(true);
+                
+                Debug.Log("Is Pawn has moved");
+                Board.EnableCellsTargets(Matrix.GetMoves(_origin));
             }
             else
             {
                 _destination = cell;
+                ResolveMovement();
             }
-
         }
 
         public static void Unselect()
         {
-            if (_selection == null) return;
+            if (_origin == null) return;
             
-            _selection.Occupant.Behaviour.Highlight(false);
-            _selection = null;
-            _availableMoves = null;
+            _origin.Occupant.Behaviour.Highlight(false);
+            _origin = null;
         }
     }
 }

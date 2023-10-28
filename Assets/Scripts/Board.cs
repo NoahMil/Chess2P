@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Pieces;
 using UnityEngine;
 
@@ -28,7 +29,7 @@ public class Board: MonoBehaviour
     {
         string[] pieceOrder = { "Rook", "Knight", "Bishop", "Queen", "King", "Bishop", "Knight", "Rook" };
         
-        for (int column = 0; column < Matrix.BoardSize; column++)
+        for (int column = 0; column < Matrix.BOARD_SIZE; column++)
         {
             Matrix.GetCell(column, 0).Occupant = Piece.Create("Light" + pieceOrder[column], Matrix.GetCell(column, 0), _piecesRoot);
             Matrix.GetCell(column, 1).Occupant = Piece.Create("LightPawn", Matrix.GetCell(column, 1), _piecesRoot);
@@ -47,19 +48,27 @@ public class Board: MonoBehaviour
 
     public static void EnableCellsTargets(List<Cell> availableCells)
     {
+        if (availableCells == null) throw new NullReferenceException("Error: No available cells in-use, is there a probleme with <GetAvailableMoves> ?");
+        
         foreach (Cell cell in availableCells)
         {
             cell.Behaviour.IsTargetable(true);
         }
     }
 
-    public static void ResetCellsTargetsState()
+    private static void ResetCellsTargetsState()
     {
         Matrix.ResetCellsTargetState();
     }
     
     public static void UpdateView()
     {
+        List<Cell> cells = Matrix.GetAllCells();
         
+        foreach (Cell cell in cells)
+        {
+            if (cell.IsOccupied)
+                cell.Occupant.Behaviour.transform.position = cell.Coordinates.World;
+        }
     }
 }

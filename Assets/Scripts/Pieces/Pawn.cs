@@ -19,16 +19,16 @@ namespace Pieces
             Cell forwardLeft = Matrix.GetCell(currentColumn - 1, currentRow + offset);
             Cell forwardRight = Matrix.GetCell(currentColumn + 1, currentRow + offset);
             
-            if (!forward.IsOccupied)
+            if (forward != null && !forward.IsOccupied)
                 moves.Add(forward);
             
-            if (forwardLeft.IsOccupied && forwardLeft.Occupant.Side != Side)
+            if (forwardLeft != null && (forwardLeft.IsOccupied && forwardLeft.Occupant.Side != Side))
                 moves.Add(forwardLeft);
             
-            if (forwardRight.IsOccupied && forwardRight.Occupant.Side != Side)
+            if (forwardRight != null && (forwardRight.IsOccupied && forwardRight.Occupant.Side != Side))
                 moves.Add(forwardLeft);
             
-            if (!HasMoved)
+            if (forwardPush != null && !HasMoved)
                 moves.Add(forwardPush);
             
             return moves;
