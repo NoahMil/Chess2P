@@ -14,7 +14,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &8968134541806882270
 Transform:
@@ -49,7 +49,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &7749455911127380938
 Transform:
@@ -92,7 +92,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &815645914513674464
 Transform:
@@ -173,6 +173,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: pine_D_03
       objectReference: {fileID: 0}
+    - target: {fileID: 1497132356430394, guid: 42f1d9a93c09eca4a8cf5e877ea7896c, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 4379745194133644, guid: 42f1d9a93c09eca4a8cf5e877ea7896c, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.49
@@ -251,6 +255,10 @@ PrefabInstance:
     - target: {fileID: 1266703560934646, guid: 358c8f81eea3b2845b7de523a36e87b5, type: 3}
       propertyPath: m_Name
       value: pine_A_04
+      objectReference: {fileID: 0}
+    - target: {fileID: 1266703560934646, guid: 358c8f81eea3b2845b7de523a36e87b5, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 4383225029303638, guid: 358c8f81eea3b2845b7de523a36e87b5, type: 3}
       propertyPath: m_LocalScale.x
@@ -331,6 +339,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: pine_D_01
       objectReference: {fileID: 0}
+    - target: {fileID: 1276376142942064, guid: 57e0a2372da2e054bad78bdfd7cea204, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 4868076642024668, guid: 57e0a2372da2e054bad78bdfd7cea204, type: 3}
       propertyPath: m_LocalPosition.x
       value: 4.26
@@ -393,6 +405,10 @@ PrefabInstance:
     - target: {fileID: 1814860823886616, guid: ccc767f8cc5ca094e8bad3016825f431, type: 3}
       propertyPath: m_Name
       value: pine_B_04
+      objectReference: {fileID: 0}
+    - target: {fileID: 1814860823886616, guid: ccc767f8cc5ca094e8bad3016825f431, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 4129639024769854, guid: ccc767f8cc5ca094e8bad3016825f431, type: 3}
       propertyPath: m_LocalScale.x
@@ -473,6 +489,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: pine_D_04 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1522377874637078, guid: 102dcc1eaa01cb44fbd5600815e16b28, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 4774858381025182, guid: 102dcc1eaa01cb44fbd5600815e16b28, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.08
@@ -536,6 +556,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: fence_A_02 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1794032722584632, guid: b3d9062e5e13a1c43816896ee48795d1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 4923909844160740, guid: b3d9062e5e13a1c43816896ee48795d1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.34
@@ -598,6 +622,10 @@ PrefabInstance:
     - target: {fileID: 1684667927376644, guid: 1efeac7eddf55b14298667cc88cbcca7, type: 3}
       propertyPath: m_Name
       value: Bridge
+      objectReference: {fileID: 0}
+    - target: {fileID: 1684667927376644, guid: 1efeac7eddf55b14298667cc88cbcca7, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 4359919773296118, guid: 1efeac7eddf55b14298667cc88cbcca7, type: 3}
       propertyPath: m_LocalScale.x
@@ -678,6 +706,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: fence_A_02 (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 1794032722584632, guid: b3d9062e5e13a1c43816896ee48795d1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 4923909844160740, guid: b3d9062e5e13a1c43816896ee48795d1, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2.48
@@ -740,6 +772,10 @@ PrefabInstance:
     - target: {fileID: 1794032722584632, guid: b3d9062e5e13a1c43816896ee48795d1, type: 3}
       propertyPath: m_Name
       value: fence_A_02
+      objectReference: {fileID: 0}
+    - target: {fileID: 1794032722584632, guid: b3d9062e5e13a1c43816896ee48795d1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 4923909844160740, guid: b3d9062e5e13a1c43816896ee48795d1, type: 3}
       propertyPath: m_LocalScale.x
@@ -820,6 +856,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: pine_C_04 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1389730510855564, guid: b1baff84876b4e0428d12bcd59a568d6, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 4776386593568628, guid: b1baff84876b4e0428d12bcd59a568d6, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.9999999
@@ -899,6 +939,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: pine_D_04
       objectReference: {fileID: 0}
+    - target: {fileID: 1522377874637078, guid: 102dcc1eaa01cb44fbd5600815e16b28, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 4774858381025182, guid: 102dcc1eaa01cb44fbd5600815e16b28, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.58
@@ -961,6 +1005,10 @@ PrefabInstance:
     - target: {fileID: 1389730510855564, guid: b1baff84876b4e0428d12bcd59a568d6, type: 3}
       propertyPath: m_Name
       value: pine_C_04
+      objectReference: {fileID: 0}
+    - target: {fileID: 1389730510855564, guid: b1baff84876b4e0428d12bcd59a568d6, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 4776386593568628, guid: b1baff84876b4e0428d12bcd59a568d6, type: 3}
       propertyPath: m_LocalScale.x
@@ -1041,6 +1089,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: pine_C_01
       objectReference: {fileID: 0}
+    - target: {fileID: 1817358812849718, guid: fb7f775d68a03454da3b81b5c1a843bb, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 4601666969215126, guid: fb7f775d68a03454da3b81b5c1a843bb, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.31
@@ -1119,6 +1171,10 @@ PrefabInstance:
     - target: {fileID: 1830936468803934, guid: 0e5b94df29f597247a3ebfcd4c1ba82c, type: 3}
       propertyPath: m_Name
       value: acacia_A
+      objectReference: {fileID: 0}
+    - target: {fileID: 1830936468803934, guid: 0e5b94df29f597247a3ebfcd4c1ba82c, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 4520054131022202, guid: 0e5b94df29f597247a3ebfcd4c1ba82c, type: 3}
       propertyPath: m_LocalScale.x
