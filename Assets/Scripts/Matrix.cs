@@ -3,14 +3,14 @@ using UnityEngine;
 
 public static class Matrix
 {
-    public const int BOARD_SIZE = 8;
-    private static readonly Cell[,] Grid = new Cell[BOARD_SIZE, BOARD_SIZE];
+    public const int BoardSize = 8;
+    private static readonly Cell[,] Grid = new Cell[BoardSize, BoardSize];
 
     public static void Init(GameObject cellPrefab, Transform cellsRoot)
     {
-        for (int column = 0; column < BOARD_SIZE; column++)
+        for (int column = 0; column < BoardSize; column++)
         {
-            for (int row = 0; row < BOARD_SIZE; row++)
+            for (int row = 0; row < BoardSize; row++)
             {
                 Grid[column, row] = new Cell(cellPrefab, cellsRoot, column, row);
             }
@@ -41,9 +41,9 @@ public static class Matrix
     {
         List<Cell> allCells = new();
         
-        for (int column = 0; column < BOARD_SIZE; column++)
+        for (int column = 0; column < BoardSize; column++)
         {
-            for (int row = 0; row < BOARD_SIZE; row++)
+            for (int row = 0; row < BoardSize; row++)
             {
                 allCells.Add(Grid[column, row]);
             }
@@ -59,9 +59,9 @@ public static class Matrix
 
     public static void ResetCellsTargetState()
     {
-        for (int column = 0; column < BOARD_SIZE; column++)
+        for (int column = 0; column < BoardSize; column++)
         {
-            for (int row = 0; row < BOARD_SIZE; row++)
+            for (int row = 0; row < BoardSize; row++)
             {
                 Grid[column, row].Behaviour.IsTargetable(Grid[column, row].IsOccupied);
             }

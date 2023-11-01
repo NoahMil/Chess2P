@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
+using MonoBehaviours;
+
 namespace Pieces
 {
     public abstract class Piece
     {
-        public PieceBehaviour Behaviour { get; set; }
-        public Side Side { get; set; }
-        protected bool HasMoved { get; set; }
+        public PieceBehaviour Behaviour { get; private set; }
+        public Side Side { get; private set; }
+        public bool HasMoved { get; set; }
 
         public static Dictionary<string, GameObject> prefabs;
 

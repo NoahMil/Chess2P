@@ -2,17 +2,20 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+using MonoBehaviours;
+
 namespace Managers
 {
     public class GameManager : MonoBehaviour
     {
-        public static Side CurrentPlayerTurn { get; set; }
+        private static Side CurrentPlayerTurn { get; set; }
         public static bool Checkmate { get; set; }
         
         private static Side OpponentTurn => (CurrentPlayerTurn == Side.Light ? Side.Dark : Side.Light);
 
         private static Cell _origin;
         private static Cell _destination;
+        private static List<Cell> _moves;
         private static bool _showedOnce;
 
         private bool _confirmEscape;
@@ -58,10 +61,12 @@ namespace Managers
         private static void ResolveMovement()
         {
             _origin.Occupant.Behaviour.Highlight(false);
-            if (_destination.IsOccupied && _destination.Occupant.Side == OpponentTurn)
+            
+            if (_destination is { IsOccupied: true } && _destination.Occupant.Side == OpponentTurn)
                 Destroy(_destination.Occupant.Behaviour.gameObject);
 
             _destination.Occupant = _origin.Occupant;
+            _destination.Occupant.HasMoved = true;
             _origin.Occupant = null;
             
             Board.UpdateView();
@@ -75,6 +80,10 @@ namespace Managers
             _showedOnce = false;
             _destination = null;
             _origin = null;
+
+            foreach (Cell cell in _moves)
+                cell.Behaviour.Highlight(false);
+            _moves = null;
         }
 
         private static void CheckEndOfGame()
@@ -86,30 +95,67 @@ namespace Managers
         {
             if (_origin == null)
             {
-                if (!cell.IsOccupied) return;
-                if (cell.Occupant.Side != CurrentPlayerTurn) {
-                    Debug.Log("You can't play an Opponent piece !");
-                    return;
-                }
-                _origin = cell;
-                _origin.Occupant.Behaviour.Highlight(true);
-                
-                Debug.Log("Is Pawn has moved");
-                Board.EnableCellsTargets(Matrix.GetMoves(_origin));
+                SetOrigin(cell);
+            }
+            else if (_origin != null && IsDifferentPieceSelected(cell)) // If the player wants to play another piece than the first selected
+            {
+                Unselect();
+                // _origin = cell;
+                // SetOrigin(cell);
+                SelectCell(cell); // Tail Recursion
             }
             else
             {
-                _destination = cell;
-                ResolveMovement();
+                SetDestination(cell);
             }
         }
 
-        public static void Unselect()
+        private static void SetOrigin(Cell cell)
+        {
+            if (!cell.IsOccupied) return;
+            if (cell.Occupant.Side != CurrentPlayerTurn) {
+                Debug.Log("You can't play an Opponent piece !");
+                return;
+            }
+                
+            _origin = cell;
+            _origin.Occupant.Behaviour.Highlight(true);
+                
+            _moves = Matrix.GetMoves(_origin);
+            Board.EnableCellsTargets(_moves);
+        }
+        
+        private static void SetDestination(Cell cell)
+        {
+            if (!_moves.Contains(cell)) return;
+                
+            _destination = cell;
+            ResolveMovement();
+        }
+
+        private static bool IsDifferentPieceSelected(Cell cell)
+        {
+            return cell.IsOccupied && cell.Occupant.Side == CurrentPlayerTurn;
+        }
+
+        public static void ShowNoMovesAvailable()
+        {
+            _origin.Occupant.Behaviour.HighlightError(true);
+        }
+
+        private static void Unselect()
         {
             if (_origin == null) return;
             
             _origin.Occupant.Behaviour.Highlight(false);
+            _origin.Occupant.Behaviour.HighlightError(false);
             _origin = null;
+
+            if (_moves == null) return;
+
+            foreach (Cell cell in _moves)
+                cell.Behaviour.Highlight(false);
+            _moves = null;
         }
     }
 }

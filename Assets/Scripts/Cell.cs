@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+
+using MonoBehaviours;
 using Pieces;
 
 public class Cell
