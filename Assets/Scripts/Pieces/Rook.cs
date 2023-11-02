@@ -12,20 +12,59 @@ namespace Pieces
             List<Cell> moves = new List<Cell>();
             int currentColumn = currentCell.Coordinates.Columns;
             int currentRow = currentCell.Coordinates.Row;
-            
+
+            GetColumnCells(currentColumn, currentRow, moves);
+            GetRowCells(currentColumn, currentRow, moves);
+
             return moves;
         }
 
-        /* private List<Cell> AvailableRowCells(int currentRow)
+        private void GetColumnCells(int currentColumn, int currentRow, ICollection<Cell> availablesMoves)
         {
-            int offset = (Side == Side.Light) ? 1 : -1;
+            for (int i = currentRow + 1; i < Matrix.BoardSize; i++) // Upward
+            {
+                Cell upwardCell = Matrix.GetCell(currentColumn, i);
+                if (!ValidateCell(availablesMoves, upwardCell))
+                    break;
+            }
             
-            // if (Side)
-        } */
+            for (int i = currentRow - 1; i >= 0; i--) // Downward
+            {
+                Cell downwardCell = Matrix.GetCell(currentColumn, i);
+                if (!ValidateCell(availablesMoves, downwardCell))
+                    break;
+            }
+        }
         
-        /*private List<Cell> AvailableColumunCells(int currentRow)
+        private void GetRowCells(int currentColumn, int currentRow, ICollection<Cell> availablesMoves)
         {
+            for (int i = currentColumn + 1; i < Matrix.BoardSize; i++) // Rightward
+            {
+                Cell rightwardCell = Matrix.GetCell(i, currentRow);
+                if (!ValidateCell(availablesMoves, rightwardCell))
+                    break;
+            }
+
+            for (int i = currentColumn - 1; i >= 0; i--) // Leftward
+            {
+                Cell leftwardCell = Matrix.GetCell(i, currentRow);
+                if (!ValidateCell(availablesMoves, leftwardCell))
+                    break;
+            }
+        }
+
+        private bool ValidateCell(ICollection<Cell> availableMoves, Cell cell)
+        {
+            if (cell.IsOccupied)
+            {
+                if (cell.Occupant.Side != Side) // Found a Opponent to take out
+                    availableMoves.Add(cell);
+
+                return false;
+            }
             
-        }*/
+            availableMoves.Add(cell);
+            return true;
+        }
     }
 }
