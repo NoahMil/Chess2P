@@ -11,5 +11,10 @@ namespace Pieces
         {
             throw new System.NotImplementedException();
         }
+
+        protected override bool ValidateCell(ICollection<Cell> availableMoves, Cell cell)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

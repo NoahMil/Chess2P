@@ -23,8 +23,8 @@ public static class Matrix
         int row = int.Parse(cellName[1..]) - 1;
         int column = columnLetter - 'A';
 
-        if (column < 0 || column > 7) return null;
-        if (row < 0 || row > 7) return null;
+        if (column is < 0 or > 7) return null;
+        if (row is < 0 or > 7) return null;
 
         return Grid[column, row];
     }

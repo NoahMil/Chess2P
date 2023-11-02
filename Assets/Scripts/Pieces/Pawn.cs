@@ -15,10 +15,10 @@ namespace Pieces
             int offset = (Side == Side.Light) ? 1 : -1;
             
             Cell forward = Matrix.GetCell(currentColumn, currentRow + offset);
-            Cell forwardPush = Matrix.GetCell(currentColumn, currentRow + offset * 2);
             Cell forwardLeft = Matrix.GetCell(currentColumn - 1, currentRow + offset);
             Cell forwardRight = Matrix.GetCell(currentColumn + 1, currentRow + offset);
-            
+            Cell forwardPush = Matrix.GetCell(currentColumn, currentRow + offset * 2);
+
             if (forward is { IsOccupied: false })
                 moves.Add(forward);
 

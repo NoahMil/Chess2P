@@ -46,5 +46,21 @@ namespace Pieces
         }
         
         public abstract List<Cell> GetAvailableMoves(Cell currentCoordinates);
+
+        protected virtual bool ValidateCell(ICollection<Cell> availableMoves, Cell cell)
+        {
+            if (cell is null) throw new IndexOutOfRangeException($"{GetType().Name} shouldn't try to validate any cell out of board !");
+
+            if (cell.IsOccupied)
+            {
+                if (cell.Occupant.Side != Side)
+                    availableMoves.Add(cell);
+
+                return false;
+            }
+
+            availableMoves.Add(cell);
+            return true;
+        }
     }
 }
