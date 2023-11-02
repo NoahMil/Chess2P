@@ -28,7 +28,7 @@ namespace Pieces
             if (forwardRight is { IsOccupied: true } && forwardRight.Occupant.Side != this.Side)
                 moves.Add(forwardRight);
             
-            if (forwardPush != null && !HasMoved)
+            if (forwardPush != null && !HasMoved && !forwardPush.IsOccupied)
                 moves.Add(forwardPush);
             
             return moves;
