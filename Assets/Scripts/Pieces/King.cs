@@ -7,14 +7,43 @@ namespace Pieces
     {
         public King(Cell cell, GameObject prefab, Transform root, Side side) : base(cell, prefab, root, side) {}
 
-        public override List<Cell> GetAvailableMoves(Cell currentCoordinates)
+        public override List<Cell> GetAvailableMoves(Cell currentCell)
         {
-            throw new System.NotImplementedException();
+            List<Cell> availableMoves = new List<Cell>();
+            int currentColumn = currentCell.Coordinates.Columns;
+            int currentRow = currentCell.Coordinates.Row;
+
+            int[] rowOffsets = { -1, -1, -1,  0, 0,  1, 1, 1 };
+            int[] colOffsets = { -1,  0,  1, -1, 1, -1, 0, 1 };
+
+            for (int i = 0; i < Matrix.BoardSize; i++)
+            {
+                int row = currentRow + rowOffsets[i];
+                int column = currentColumn + colOffsets[i];
+
+                Cell cell = Matrix.GetCell(column, row);
+                ValidateCell(availableMoves, cell);
+            }
+
+            return availableMoves;
+        }
+
+        public override List<Cell> GetPathToKing(Cell currentCell)
+        {
+            return null; // Cannot even move itself towards another King
         }
 
         protected override bool ValidateCell(ICollection<Cell> availableMoves, Cell cell)
         {
-            throw new System.NotImplementedException();
+            if (cell is null) return false; // King will check out-of-board cells, skipping them
+
+            if (!cell.IsOccupied || (cell.IsOccupied && cell.Occupant.Side != Side && cell.Occupant.IsNotTheKing))
+            {
+                availableMoves.Add(cell);
+                return true;
+            }
+
+            return false;
         }
     }
 }

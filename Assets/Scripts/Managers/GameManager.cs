@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -8,11 +9,13 @@ namespace Managers
 {
     public class GameManager : MonoBehaviour
     {
-        private static Side CurrentPlayerTurn { get; set; }
-        public static bool Checkmate { get; set; }
+        public static Action<Side> onMoveMade;
         
-        private static Side OpponentTurn => (CurrentPlayerTurn == Side.Light ? Side.Dark : Side.Light);
-
+        public static Side CurrentPlayerTurn { get; private set; }
+        public static Side OpponentTurn => (CurrentPlayerTurn == Side.Light ? Side.Dark : Side.Light);
+        public static bool Checkmate { get; set; }
+        public static bool Check { get; set; }
+        
         private static Cell _origin;
         private static Cell _destination;
         private static List<Cell> _moves;
@@ -76,14 +79,17 @@ namespace Managers
 
         private static void ChangeTurn()
         {
-            CurrentPlayerTurn = OpponentTurn;
+            
             _showedOnce = false;
             _destination = null;
             _origin = null;
 
             foreach (Cell cell in _moves)
-                cell.Behaviour.Highlight(false);
+                cell.Behaviour.Highlight(false, CellBehaviour.defaultColor);
             _moves = null;
+            
+            onMoveMade?.Invoke(OpponentTurn); // Upon ending a turn, raise the event "MoveMade";
+            CurrentPlayerTurn = OpponentTurn;
         }
 
         private static void CheckEndOfGame()
@@ -93,20 +99,30 @@ namespace Managers
 
         public static void SelectCell(Cell cell)
         {
-            if (_origin == null)
+            if (Check)
             {
-                SetOrigin(cell);
-            }
-            else if (_origin != null && IsDifferentPieceSelected(cell)) // If the player wants to play another piece than the first selected
-            {
-                Unselect();
-                // _origin = cell;
-                // SetOrigin(cell);
-                SelectCell(cell); // Tail Recursion
+                if (cell != Matrix.GetKing(CurrentPlayerTurn))
+                {
+                    Debug.Log($"{CurrentPlayerTurn.ToString()} King is in Check");
+                }
             }
             else
             {
-                SetDestination(cell);
+                if (_origin == null)
+                {
+                    SetOrigin(cell);
+                }
+                else if (_origin != null && IsDifferentPieceSelected(cell)) // If the player wants to play another piece than the first selected
+                {
+                    Unselect();
+                    // _origin = cell;
+                    // SetOrigin(cell);
+                    SelectCell(cell); // Tail Recursion
+                }
+                else
+                {
+                    SetDestination(cell);
+                }
             }
         }
 
@@ -154,7 +170,7 @@ namespace Managers
             if (_moves == null) return;
 
             foreach (Cell cell in _moves)
-                cell.Behaviour.Highlight(false);
+                cell.Behaviour.Highlight(false, CellBehaviour.defaultColor);
             _moves = null;
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public static class Matrix
@@ -50,6 +51,40 @@ public static class Matrix
         }
 
         return allCells;
+    }
+
+    public static List<Cell> GetPieceCells(Side side)
+    {
+        List<Cell> pieceCells = new();
+        
+        for (int column = 0; column < BoardSize; column++)
+        {
+            for (int row = 0; row < BoardSize; row++)
+            {
+                Cell cell = Grid[column, row];
+                if (cell.IsOccupied && cell.Occupant.Side == side)
+                    pieceCells.Add(cell);
+            }
+        }
+
+        return pieceCells;
+    }
+
+    public static Cell GetKing(Side side)
+    {
+        Cell cell;
+        
+        for (int column = 0; column < BoardSize; column++)
+        {
+            for (int row = 0; row < BoardSize; row++)
+            {
+                cell = Grid[column, row];
+                if (cell.IsOccupied && cell.Occupant.IsTheKing && cell.Occupant.Side == side)
+                    return cell;
+            }
+        }
+
+        throw new NullReferenceException($"Error: Unable to get the {side.ToString()} King. A piece may have bypassed all safeguard and took the King out");
     }
 
     public static List<Cell> GetMoves(Cell cell)

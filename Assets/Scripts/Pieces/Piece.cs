@@ -9,12 +9,15 @@ namespace Pieces
 {
     public abstract class Piece
     {
+        public static Dictionary<string, GameObject> prefabs;
+        
         public PieceBehaviour Behaviour { get; private set; }
         public Side Side { get; private set; }
         public bool HasMoved { get; set; }
-
-        public static Dictionary<string, GameObject> prefabs;
-
+        
+        public bool IsTheKing => this.GetType() == typeof(King);
+        public bool IsNotTheKing => this.GetType() != typeof(King);
+        
         protected Piece(Cell cell, GameObject prefab, Transform root, Side side)
         {
             Quaternion rotation = side == Side.Light ? Quaternion.identity : Quaternion.Euler(0, -180, 0);
@@ -45,8 +48,10 @@ namespace Pieces
             };
         }
         
-        public abstract List<Cell> GetAvailableMoves(Cell currentCoordinates);
+        public abstract List<Cell> GetAvailableMoves(Cell currentCell);
 
+        public abstract List<Cell> GetPathToKing(Cell currentCell);
+        
         protected virtual bool ValidateCell(ICollection<Cell> availableMoves, Cell cell)
         {
             if (cell is null) throw new IndexOutOfRangeException($"{GetType().Name} shouldn't try to validate any cell out of board !");

@@ -63,7 +63,7 @@ namespace MonoBehaviours
             foreach (Cell cell in availableCells)
             {
                 cell.Behaviour.IsTargetable(true);
-                cell.Behaviour.Highlight(true);
+                cell.Behaviour.Highlight(true, CellBehaviour.defaultColor);
             }
         }
 

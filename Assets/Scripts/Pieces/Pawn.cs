@@ -18,20 +18,38 @@ namespace Pieces
             Cell forwardLeft = Matrix.GetCell(currentColumn - 1, currentRow + offset);
             Cell forwardRight = Matrix.GetCell(currentColumn + 1, currentRow + offset);
             Cell forwardPush = Matrix.GetCell(currentColumn, currentRow + offset * 2);
+            
+            if (forwardLeft is { IsOccupied: true } && forwardLeft.Occupant.Side != Side)
+                moves.Add(forwardLeft);
+
+            if (forwardRight is { IsOccupied: true } && forwardRight.Occupant.Side != Side)
+                moves.Add(forwardRight);
 
             if (forward is { IsOccupied: false })
                 moves.Add(forward);
-
-            if (forwardLeft is { IsOccupied: true } && forwardLeft.Occupant.Side != this.Side)
-                moves.Add(forwardLeft);
-
-            if (forwardRight is { IsOccupied: true } && forwardRight.Occupant.Side != this.Side)
-                moves.Add(forwardRight);
+            else
+                return moves;
             
             if (forwardPush != null && !HasMoved && !forwardPush.IsOccupied)
                 moves.Add(forwardPush);
             
             return moves;
+        }
+
+        public override List<Cell> GetPathToKing(Cell currentCell)
+        {
+            List<Cell> moves = GetAvailableMoves(currentCell);
+            List<Cell> pathToKing = new();
+
+            foreach (Cell cell in moves)
+            {
+                if (cell.IsOccupied && cell.Occupant.IsTheKing && cell.Occupant.Side != Side)
+                {
+                    pathToKing.Add(cell);
+                }
+            }
+            
+            return pathToKing;
         }
     }
 }

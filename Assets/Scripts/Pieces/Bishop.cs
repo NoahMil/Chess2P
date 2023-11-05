@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Managers;
 using UnityEngine;
 
 namespace Pieces
@@ -42,6 +43,55 @@ namespace Pieces
             }
 
             return availableMoves;
+        }
+
+        public override List<Cell> GetPathToKing(Cell currentCell)
+        {
+            List<Cell> pathToKing = new List<Cell>();
+            int currentColumn = currentCell.Coordinates.Columns;
+            int currentRow = currentCell.Coordinates.Row;
+            
+            for (int column = currentColumn + 1, row = currentRow + 1; row < Matrix.BoardSize && column < Matrix.BoardSize; row++, column++) // Upward-right
+            {
+                Cell cell = Matrix.GetCell(column, row);
+                if (!ValidateCell(pathToKing, cell))
+                    if (pathToKing.Contains(Matrix.GetKing(GameManager.OpponentTurn)))
+                        return pathToKing;
+                    else
+                        pathToKing.Clear();
+            }
+            
+            for (int column = currentColumn - 1, row = currentRow + 1; row < Matrix.BoardSize && column >= 0; row++, column--) // Upward-left
+            {
+                Cell cell = Matrix.GetCell(column, row);
+                if (!ValidateCell(pathToKing, cell))
+                    if (pathToKing.Contains(Matrix.GetKing(GameManager.OpponentTurn)))
+                        return pathToKing;
+                    else
+                        pathToKing.Clear();
+            }
+
+            for (int column = currentColumn + 1, row = currentRow - 1; row >= 0 && column < Matrix.BoardSize; row--, column++) // Downward-right
+            {
+                Cell cell = Matrix.GetCell(column, row);
+                if (!ValidateCell(pathToKing, cell))
+                    if (pathToKing.Contains(Matrix.GetKing(GameManager.OpponentTurn)))
+                        return pathToKing;
+                    else
+                        pathToKing.Clear();
+            }
+
+            for (int column = currentColumn - 1, row = currentRow - 1; row >= 0 && column >= 0; row--, column--) // Downward-left
+            {
+                Cell cell = Matrix.GetCell(column, row);
+                if (!ValidateCell(pathToKing, cell))
+                    if (pathToKing.Contains(Matrix.GetKing(GameManager.OpponentTurn)))
+                        return pathToKing;
+                    else
+                        pathToKing.Clear();
+            }
+
+            return null;
         }
     }
 }
