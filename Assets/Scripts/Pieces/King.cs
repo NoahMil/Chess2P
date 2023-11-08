@@ -28,11 +28,6 @@ namespace Pieces
             return availableMoves;
         }
 
-        public override List<Cell> GetPathToKing(Cell currentCell)
-        {
-            return null; // Cannot even move itself towards another King
-        }
-
         protected override bool ValidateCell(ICollection<Cell> availableMoves, Cell cell)
         {
             if (cell is null) return false; // King will check out-of-board cells, skipping them

@@ -25,14 +25,16 @@ namespace MonoBehaviours
             _mesh.material.SetFloat(EnableFresnel, value);
         }
 
-        public void HighlightError(bool enable, Color color = default)
+        public void HighlightError(bool enable)
         {
             int value = Convert.ToInt32(enable);
 
-            if (color == default)
-                color = Color.red;
-
-            _mesh.material.SetColor(FresnelColor, enable ? color : _initialColor);
+            Color errorColor = _initialColor;
+            errorColor.r = 255;
+            errorColor.g = 62;
+            errorColor.b = 0;
+            
+            _mesh.material.SetColor(FresnelColor, errorColor);
             _mesh.material.SetFloat(EnableFresnel, value);
         }
     }

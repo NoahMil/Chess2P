@@ -47,8 +47,8 @@ namespace Managers
                 Debug.Log($"Found {_checkResponsibles.Count} possible checks");
                 foreach (Cell responsible in _checkResponsibles) // Highlight the threat line(s) and track cells as invalid to play
                 {
-                    responsible.Occupant.Behaviour.HighlightError(true, Utility.CheckWarning);
-                    foreach (Cell cell in responsible.Occupant.GetPathToKing(responsible)) 
+                    // responsible.Occupant.Behaviour.HighlightError(true);
+                    foreach (Cell cell in responsible.Occupant.GetAvailableMoves(responsible)) 
                     {
                         cell.Behaviour.Highlight(true, Utility.PieceCheckWarning);
                         _invalidCellsForKing.Add(cell); // Use later to extract possible moves for the King

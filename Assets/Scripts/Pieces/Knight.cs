@@ -30,23 +30,6 @@ namespace Pieces
             return availableMoves;
         }
 
-        public override List<Cell> GetPathToKing(Cell currentCell)
-        {
-            List<Cell> moves = GetAvailableMoves(currentCell);
-            List<Cell> pathToKing = new();
-
-            foreach (Cell cell in moves)
-            {
-                if (cell == Matrix.GetKing(GameManager.OpponentTurn))
-                {
-                    pathToKing.Add(cell);
-                    return pathToKing;
-                }
-            }
-
-            return null;
-        }
-
         protected override bool ValidateCell(ICollection<Cell> availableMoves, Cell cell)
         {
             if (cell == null) return false; // Knight will check out-of-board cells, skipping them

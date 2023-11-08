@@ -35,21 +35,5 @@ namespace Pieces
             
             return moves;
         }
-
-        public override List<Cell> GetPathToKing(Cell currentCell)
-        {
-            List<Cell> moves = GetAvailableMoves(currentCell);
-            List<Cell> pathToKing = new();
-
-            foreach (Cell cell in moves)
-            {
-                if (cell.IsOccupied && cell.Occupant.IsTheKing && cell.Occupant.Side != Side)
-                {
-                    pathToKing.Add(cell);
-                }
-            }
-            
-            return pathToKing;
-        }
     }
 }

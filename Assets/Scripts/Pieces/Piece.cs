@@ -49,8 +49,6 @@ namespace Pieces
         }
         
         public abstract List<Cell> GetAvailableMoves(Cell currentCell);
-
-        public abstract List<Cell> GetPathToKing(Cell currentCell);
         
         protected virtual bool ValidateCell(ICollection<Cell> availableMoves, Cell cell)
         {
