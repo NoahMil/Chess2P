@@ -89,7 +89,7 @@ public static class Matrix
 
     public static List<Cell> GetMoves(Cell cell)
     {
-        return cell.Occupant.GetAvailableMoves(cell);
+        return cell.Occupant.AvailableMoves();
     }
 
     public static Cell[,] GetCurrentGridSnapshot() // Deep Copy

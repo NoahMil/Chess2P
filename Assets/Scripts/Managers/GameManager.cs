@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -51,7 +50,7 @@ namespace Managers
             if (triggered && _confirmEscape)
             {
 #if UNITY_EDITOR
-                    UnityEditor.EditorApplication.ExitPlaymode();
+                UnityEditor.EditorApplication.ExitPlaymode();
 #endif
                 Application.Quit();
             }
@@ -137,8 +136,11 @@ namespace Managers
                 Destroy(_destination.Occupant.Behaviour.gameObject);
 
             _destination.Occupant = _origin.Occupant;
+            _destination.Occupant.Cell = _destination; // I need to update the Piece's internal reference to it's holding Cell. Since the AvailableMove works automously (without re-providing the cell as a paramater)
             _destination.Occupant.HasMoved = true;
             _origin.Occupant = null;
+
+            Debug.Log($"Played {_destination.GetType()} from {_origin.Name} to {_destination.Name}");
                 
             Board.UpdateView();
             ChangeTurn();
@@ -198,13 +200,13 @@ namespace Managers
 
             foreach (Cell opponentCell in opponentPieces) // For each opponent pieces
             {
-                List<Cell> possibleMoves = opponentCell.Occupant.GetAvailableMoves(opponentCell);
+                List<Cell> possibleMoves = opponentCell.Occupant.AvailableMoves();
 
                 foreach (Cell target in possibleMoves) // For each possibility
                 {
                     if (target == king) // If one of them threaten the King
                     {
-                        Debug.Log($">>> >>> {opponentCell.Occupant.Side} {opponentCell.Occupant.GetType()} make the {king.Occupant.Side} {king.Occupant.GetType()} in check, tracking down...");
+                        Debug.Log($"{opponentCell.Occupant.Side} {opponentCell.Occupant.GetType().Name} make the {king.Occupant.Side} {king.Occupant.GetType().Name} in check, tracking down...");
                         _checkResponsibles.Add(opponentCell); // Track the piece
                         break;
                     }
@@ -212,10 +214,10 @@ namespace Managers
 
                 if (_checkResponsibles.Count > 0) // If any opponent piece threaten the King
                 {
-                    Debug.Log($"Found {_checkResponsibles.Count} possible checks");
+                    Debug.Log($"{_checkResponsibles.Count} threats have been detected towards {king.Occupant.Side} {king.Occupant.GetType().Name}");
                     foreach (Cell responsible in _checkResponsibles) // For each King's threats
                     {
-                        foreach (Cell cell in responsible.Occupant.GetAvailableMoves(responsible))  
+                        foreach (Cell cell in responsible.Occupant.AvailableMoves())  
                         {
                             cell.Behaviour.HighlightCheck(true);; // Highlight the threat line(s) 
                             _invalidCellsForKing.Add(cell); // and track cells as invalid to play. Use later to extract possible moves for the King
@@ -226,7 +228,6 @@ namespace Managers
                 }
             }
 
-            Debug.Log("No checks found...");
             return false;
         }
             
@@ -246,18 +247,18 @@ namespace Managers
             List<Cell> availableMoves = new();
             Cell[,] snapshot = Matrix.GetCurrentGridSnapshot();
 
-            foreach (Cell cell in snapshot)
+            foreach (Cell cell in snapshot) // For each piece from current player' side
             {
                 if (cell.Occupant == null || cell.Occupant.Side != CurrentPlayerTurn) continue;
-
-                foreach (Cell moves in cell.Occupant.GetAvailableMoves(cell))
+                
+                foreach (Cell moves in cell.Occupant.AvailableMoves()) // For each moves this piece can achieve
                 {
-                    // int m = 0;
-                    
                     // Simulate a new grid (from the snapshot) by manually move the piece according to each of it's positions
+                    VirtualResolve(snapshot, cell);
+                    
                     // Verify if there is any checks left
-                        // if (Checks) -> move not valid; continue;
-                        // else        -> move does resolve one or all the checks; Add move to valid list; m++
+                    // if (Checks) -> move not valid; continue;
+                    // else        -> move does resolve one or all the checks; Add move to valid list; m++
                     
                 }
                 // if (m == 0) -> This piece can't resolve the Check(s); Iterate next piece;
@@ -266,6 +267,15 @@ namespace Managers
             // if (availableMoves.Count == 0) -> No piece can't be played; Checkmate;
             // else
             return availableMoves; // Maybe push Checkmate verification upward;
+        }
+
+        private static void VirtualResolve(Cell[,] snapshot, Cell moveToTest) // Resolve every possible movements from a snapshot
+        {
+            Cell[,] virtualGrid = Matrix.DuplicateSnapshot(snapshot); // Preserve state for each piece' simulation
+            Cell virtualOrigin;
+            Cell virtualDestination;
+            
+            
         }
 
         #endregion

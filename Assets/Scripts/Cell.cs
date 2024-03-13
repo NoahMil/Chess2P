@@ -9,6 +9,7 @@ public class Cell
     public Coordinates Coordinates { get; set; }
     public Piece Occupant { get; set; }
 
+    public string Name => Behaviour.name;
     public bool IsOccupied => Occupant != null;
 
     public Cell(GameObject prefab, Transform root, int column, int row)

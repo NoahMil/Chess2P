@@ -10,7 +10,8 @@ namespace Pieces
     public abstract class Piece
     {
         public static Dictionary<string, GameObject> Prefabs;
-        
+
+        public Cell Cell;
         public PieceBehaviour Behaviour { get; private set; }
         public Side Side { get; private set; }
         public bool HasMoved { get; set; }
@@ -20,6 +21,7 @@ namespace Pieces
         
         protected Piece(Cell cell, GameObject prefab, Transform root, Side side)
         {
+            Cell = cell;
             Quaternion rotation = side == Side.Light ? Quaternion.identity : Quaternion.Euler(0, -180, 0);
             GameObject piece = Object.Instantiate(prefab, cell.Coordinates.World, rotation, root);
             Behaviour = piece.GetComponent<PieceBehaviour>();
@@ -48,7 +50,7 @@ namespace Pieces
             };
         }
         
-        public abstract List<Cell> GetAvailableMoves(Cell currentCell);
+        public abstract List<Cell> AvailableMoves();
         
         protected virtual bool ValidateCell(ICollection<Cell> availableMoves, Cell cell)
         {
