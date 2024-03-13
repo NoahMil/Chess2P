@@ -148,5 +148,5 @@ Material:
     - _fresnelAltColor: {r: 2, g: 0.52332246, b: 0, a: 1}
     - _fresnelColor: {r: 0.12230325, g: 1, b: 0, a: 1}
     - _fresnelErrorColor: {r: 2, g: 0.52332246, b: 0, a: 1}
-    - _materialColor: {r: 0.32941177, g: 0.32941177, b: 0.32941177, a: 0}
+    - _materialColor: {r: 0.020588236, g: 0.020588236, b: 0.020588236, a: 0}
   m_BuildTextureStacks: []
