@@ -23,6 +23,9 @@
         },
         {
             "m_Id": "0843cfbff57b4aff80d14b45e4abef8b"
+        },
+        {
+            "m_Id": "5394b55520d7469c81129429ec8c0555"
         }
     ],
     "m_Keywords": [],
@@ -429,6 +432,7 @@
     "m_OutputNode": {
         "m_Id": ""
     },
+    "m_SubDatas": [],
     "m_ActiveTargets": [
         {
             "m_Id": "14f025baf7dc4a0e95fe6b5a68bb7ad8"
@@ -488,6 +492,9 @@
         },
         {
             "m_Id": "e58bd57d7acd448fa6fa4e9a0e3a0366"
+        },
+        {
+            "m_Id": "5394b55520d7469c81129429ec8c0555"
         },
         {
             "m_Id": "e00856628cf04c588d995121eb22c841"
@@ -1400,6 +1407,36 @@
 }
 
 {
+    "m_SGVersion": 3,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.ColorShaderProperty",
+    "m_ObjectId": "5394b55520d7469c81129429ec8c0555",
+    "m_Guid": {
+        "m_GuidSerialized": "c7ca5d81-4dd4-450c-aa23-3e06690774a7"
+    },
+    "m_Name": "fresnelAltColor",
+    "m_DefaultRefNameVersion": 1,
+    "m_RefNameGeneratedByDisplayName": "fresnelAltColor",
+    "m_DefaultReferenceName": "_fresnelAltColor",
+    "m_OverrideReferenceName": "",
+    "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
+    "m_DismissedVersion": 0,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": {
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0,
+        "a": 0.0
+    },
+    "isMainColor": false,
+    "m_ColorMode": 1
+}
+
+{
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.DynamicVectorMaterialSlot",
     "m_ObjectId": "53bf50894f38488cb69cc8493adea754",
@@ -1682,7 +1719,7 @@
         "a": 0.0
     },
     "isMainColor": false,
-    "m_ColorMode": 0
+    "m_ColorMode": 1
 }
 
 {
@@ -2831,7 +2868,7 @@
         "a": 0.0
     },
     "isMainColor": false,
-    "m_ColorMode": 0
+    "m_ColorMode": 1
 }
 
 {

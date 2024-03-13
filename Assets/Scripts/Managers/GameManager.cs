@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 using MonoBehaviours;
-using Helpers;
 
 namespace Managers
 {
@@ -20,7 +18,6 @@ namespace Managers
         private static List<Cell> _moves;
         private static bool _showedOnce;
 
-        private static bool _inCheck = false;
         private static List<Cell> _checkResponsibles = new ();
         private static List<Cell> _invalidCellsForKing = new ();
         private static List<Cell> _validEscapeMoves = new();
@@ -54,7 +51,9 @@ namespace Managers
             {
                 if (triggered && _confirmEscape)
                 {
-                    EditorApplication.ExitPlaymode();
+                    #if UNITY_EDITOR
+                    UnityEditor.EditorApplication.ExitPlaymode();
+                    #endif
                     Application.Quit();
                 }
                 
@@ -123,7 +122,7 @@ namespace Managers
                     if (_moves == null) return;
 
                     foreach (Cell cell in _moves)
-                        cell.Behaviour.Highlight(false, CellBehaviour.defaultColor);
+                        cell.Behaviour.Highlight(false);
                     _moves = null;
                 }
             
@@ -151,7 +150,7 @@ namespace Managers
                 _origin = null;
 
                 foreach (Cell cell in _moves) // Reset Cells highlighting
-                    cell.Behaviour.Highlight(false, CellBehaviour.defaultColor);
+                    cell.Behaviour.Highlight(false);
                 _moves = null;
                 
                 CurrentPlayerTurn = OpponentTurn;
@@ -217,7 +216,7 @@ namespace Managers
                         {
                             foreach (Cell cell in responsible.Occupant.GetAvailableMoves(responsible))  
                             {
-                                cell.Behaviour.Highlight(true, Utility.PieceCheckWarning); // Highlight the threat line(s) 
+                                cell.Behaviour.HighlightCheck(true);; // Highlight the threat line(s) 
                                 _invalidCellsForKing.Add(cell); // and track cells as invalid to play. Use later to extract possible moves for the King
                             }
                         }
@@ -234,7 +233,7 @@ namespace Managers
             {
                 foreach (Cell cell in _checkResponsibles)
                 {
-                    cell.Behaviour.Highlight(false, CellBehaviour.defaultColor);
+                    cell.Behaviour.Highlight(false);
                 }
                 
                 _checkResponsibles.Clear();
