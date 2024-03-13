@@ -19,4 +19,11 @@ public class Cell
         Behaviour = cell.GetComponent<CellBehaviour>();
         cell.name = (char)('A' + column) + (row + 1).ToString();
     }
+
+    public Cell(Cell copy)
+    {
+        Coordinates = copy.Coordinates;
+        Behaviour = copy.Behaviour;
+        Occupant = copy.Occupant;
+    }
 }
