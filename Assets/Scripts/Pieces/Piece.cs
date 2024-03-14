@@ -15,6 +15,7 @@ namespace Pieces
         public PieceBehaviour Behaviour { get; private set; }
         public Side Side { get; private set; }
         public bool HasMoved { get; set; }
+        public abstract int HeuristicScore { get; }
         
         public bool IsTheKing => this.GetType() == typeof(King);
         public bool IsNotTheKing => this.GetType() != typeof(King);
@@ -29,8 +30,6 @@ namespace Pieces
             HasMoved = false;
         }
         
-        protected abstract int Heuristic { get; }
-
         public static Piece Create(string prefabName, Cell originCell, Transform root)
         {
             return prefabName switch

@@ -7,6 +7,8 @@ namespace Pieces
     {
         public Queen(Cell cell, GameObject prefab, Transform root, Side side) : base(cell, prefab, root, side) {}
 
+        public override int HeuristicScore => 10;
+        
         public override List<Cell> AvailableMoves()
         {
             List<Cell> availableMoves = new List<Cell>();

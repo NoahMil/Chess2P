@@ -6,6 +6,8 @@ namespace Pieces
     public class Knight : Piece
     {
         public Knight(Cell cell, GameObject prefab, Transform root, Side side) : base(cell, prefab, root, side) {}
+        
+        public override int HeuristicScore => 3;
 
         public override List<Cell> AvailableMoves()
         {

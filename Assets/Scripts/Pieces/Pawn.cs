@@ -7,6 +7,8 @@ namespace Pieces
     {
         public Pawn(Cell cell, GameObject prefab, Transform root, Side side) : base(cell, prefab, root, side) {}
 
+        public override int HeuristicScore => 1;
+
         public override List<Cell> AvailableMoves()
         {
             List<Cell> moves = new List<Cell>();

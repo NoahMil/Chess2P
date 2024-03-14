@@ -247,19 +247,18 @@ namespace Managers
             List<Cell> availableMoves = new();
             Cell[,] snapshot = Matrix.GetCurrentGridSnapshot();
 
-            foreach (Cell cell in snapshot) // For each piece from current player' side
+            foreach (Cell piece in snapshot) // For each piece from current player' side
             {
-                if (cell.Occupant == null || cell.Occupant.Side != CurrentPlayerTurn) continue;
+                if (piece.Occupant == null || piece.Occupant.Side != CurrentPlayerTurn) continue;
                 
-                foreach (Cell moves in cell.Occupant.AvailableMoves()) // For each moves this piece can achieve
+                foreach (Cell moves in piece.Occupant.AvailableMoves()) // For each moves this piece can achieve
                 {
                     // Simulate a new grid (from the snapshot) by manually move the piece according to each of it's positions
-                    VirtualResolve(snapshot, cell);
+                    VirtualResolve(snapshot, piece,moves);
                     
                     // Verify if there is any checks left
                     // if (Checks) -> move not valid; continue;
                     // else        -> move does resolve one or all the checks; Add move to valid list; m++
-                    
                 }
                 // if (m == 0) -> This piece can't resolve the Check(s); Iterate next piece;
             }
@@ -269,13 +268,19 @@ namespace Managers
             return availableMoves; // Maybe push Checkmate verification upward;
         }
 
-        private static void VirtualResolve(Cell[,] snapshot, Cell moveToTest) // Resolve every possible movements from a snapshot
+        private static void VirtualResolve(Cell[,] snapshot, Cell origin, Cell moveToTest) // Resolve every possible movements from a snapshot
         {
             Cell[,] virtualGrid = Matrix.DuplicateSnapshot(snapshot); // Preserve state for each piece' simulation
-            Cell virtualOrigin;
-            Cell virtualDestination;
+            Cell virtualOrigin = virtualGrid[origin.Coordinates.Columns, origin.Coordinates.Row];
+            Cell virtualDestination = virtualGrid[moveToTest.Coordinates.Columns, moveToTest.Coordinates.Row];
             
+            if (virtualDestination is { IsOccupied: true } && virtualDestination.Occupant.Side == OpponentTurn)
+                Destroy(virtualDestination.Occupant.Behaviour.gameObject);
             
+            virtualDestination.Occupant = virtualOrigin.Occupant;
+            virtualDestination.Occupant.Cell = virtualDestination; // I need to update the Piece's internal reference to it's holding Cell. Since the AvailableMove works automously (without re-providing the cell as a paramater)
+            virtualDestination.Occupant.HasMoved = true;
+            virtualOrigin.Occupant = null;
         }
 
         #endregion
