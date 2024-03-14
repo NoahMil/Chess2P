@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
+using Data;
 using View;
 using Pieces;
 
@@ -8,11 +10,6 @@ namespace Managers
 {
     public class GameManager : MonoBehaviour
     {
-        public static Side CurrentPlayerTurn { get; private set; }
-        public static Side OpponentTurn => (CurrentPlayerTurn == Side.Light ? Side.Dark : Side.Light);
-        public static bool Checkmate { get; set; }
-        public static bool Check { get; set; }
-        
         private static Cell _origin;
         private static Cell _destination;
         private static List<Cell> _moves;
@@ -23,12 +20,29 @@ namespace Managers
 
         private bool _confirmEscape;
         private float _escapeTimer = 3f;
+        public static Side CurrentPlayerTurn { get; private set; }
+        public static Side OpponentTurn => (CurrentPlayerTurn == Side.Light ? Side.Dark : Side.Light);
+        public static bool Checkmate { get; set; }
+        public static bool Check { get; set; }
 
-        #region Interactions
+        #region Data Link
+
+        public static Cell GetDataCell(CellBehaviour viewCell)
+        {
+            return Matrix.GetCell(viewCell.Coordinates.Row, viewCell.Coordinates.Column);
+        }
+
+        public static CellBehaviour GetBehaviourCell(Cell dataCell)
+        {
+            return dataCell == null ? null : Board.CellBehaviours.First(cell => cell.Coordinates.Equals(dataCell.Coordinates));
+        }
+
+        #endregion
         
+        #region Interactions
+
         private void Awake()
         {
-            Board = GameObject.Find("Board").GetComponent<Board>();
             CurrentPlayerTurn = Side.Light;
             Checkmate = false;
         }
@@ -65,13 +79,13 @@ namespace Managers
 
             _escapeTimer -= Time.deltaTime;
         }
-        
+
         #endregion
 
         #region Game Logic
-        
+
         #region Cell Selection
-            
+
         public static void SelectCell(Cell cell)
         {
             if (Check)
@@ -115,37 +129,37 @@ namespace Managers
                 SetDestination(cell);
             }
         }
-                
+
         private static void Unselect()
         {
             if (_origin == null) return;
                     
-            _origin.Occupant.Behaviour.Highlight(false);
-            _origin.Occupant.Behaviour.HighlightError(false);
+            GetBehaviourCell(_origin).Occupant.Highlight(false);
+            GetBehaviourCell(_origin).Occupant.HighlightError(false);
             _origin = null;
 
             if (_moves == null) return;
 
             foreach (Cell cell in _moves)
-                cell.Behaviour.Highlight(false);
+                GetBehaviourCell(cell).Highlight(false);
             _moves = null;
         }
-            
+
         #endregion
 
         private static void ResolveMovement()
         {
-            _origin.Occupant.Behaviour.Highlight(false);
+            GetBehaviourCell(_origin).Occupant.Highlight(false);
                 
             if (_destination is { IsOccupied: true } && _destination.Occupant.Side == OpponentTurn)
-                Destroy(_destination.Occupant.Behaviour.gameObject);
+                Destroy(GetBehaviourCell(_destination).Occupant.gameObject);
 
             _destination.Occupant = _origin.Occupant;
             _destination.Occupant.Cell = _destination; // I need to update the Piece's internal reference to it's holding Cell. Since the AvailableMove works automously (without re-providing the cell as a paramater)
             _destination.Occupant.HasMoved = true;
             _origin.Occupant = null;
 
-            Debug.Log($"Played {_destination.GetType()} from {_origin.Name} to {_destination.Name}");
+            Debug.Log($"Played {_destination.GetType()} from {GetBehaviourCell(_origin).Name} to {GetBehaviourCell(_destination).Name}");
                 
             Board.UpdateView();
             HandleCheck();
@@ -175,7 +189,7 @@ namespace Managers
             _origin = null;
 
             foreach (Cell cell in _moves) // Reset Cells highlighting
-                cell.Behaviour.Highlight(false);
+                GetBehaviourCell(cell).Highlight(false);
             _moves = null;
                 
             CurrentPlayerTurn = OpponentTurn;
@@ -194,12 +208,12 @@ namespace Managers
             }
                     
             _origin = cell;
-            _origin.Occupant.Behaviour.Highlight(true);
+            GetBehaviourCell(_origin).Occupant.Highlight(true);
                     
             _moves = Matrix.GetMoves(_origin);
             Board.EnableCellsTargets(_moves);
         }
-            
+
         private static void SetDestination(Cell cell)
         {
             if (!_moves.Contains(cell)) return;
@@ -209,9 +223,9 @@ namespace Managers
         }
 
         #endregion
-        
+
         #region Checks handling
-        
+
         /// <summary>
         /// Verify if the player from a specific side is in check from the supplied "snapshot" grid
         /// </summary>
@@ -245,7 +259,7 @@ namespace Managers
                     foreach (Cell responsible in _checkResponsibles) // For each King's threats
                     {
                         foreach (Cell cell in responsible.Occupant.AvailableMoves()) {
-                            cell.Behaviour.HighlightCheck(true);; // Highlight the threat line(s) 
+                            GetBehaviourCell(cell).HighlightCheck(true);; // Highlight the threat line(s) 
                         }
                     }
 
@@ -255,17 +269,17 @@ namespace Managers
 
             return false;
         }
-            
+
         private static void ClearChecks()
         {
             foreach (Cell cell in _checkResponsibles)
             {
-                cell.Behaviour.Highlight(false);
+                GetBehaviourCell(cell).Highlight(false);
             }
                 
             _checkResponsibles.Clear();
         }
-            
+
         private static void GatherValidMoves()
         {
             Cell[,] snapshot = Matrix.GetCurrentGridSnapshot();
@@ -312,22 +326,9 @@ namespace Managers
         }
 
         public static void ShowNoMovesAvailable() {
-            _origin.Occupant.Behaviour.HighlightError(true);
+            GetBehaviourCell(_origin).Occupant.HighlightError(true);
         }
 
         #endregion
-
-        public static Cell GetDataCell(Coordinates coords)
-        {
-            return Matrix.GetCell(coords.Row, coords.Column);
-        }
-
-        public static CellBehaviour GetBehaviour(Coordinates coords)
-        {
-            foreach (CellBehaviour cell in Board.CellBehaviours)
-            {
-                if (cell.Coordinates)
-            }
-        }
     }
 }

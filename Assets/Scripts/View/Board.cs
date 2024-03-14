@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Data;
+using UnityEngine;
+
 using Managers;
 using Pieces;
-using UnityEngine;
 
 namespace View
 {
@@ -30,7 +32,7 @@ namespace View
             InitializePiecesPrefabs();
             InitializeMatrix();
             InitializePieces();
-            ResetCellsTargetsState();
+            ResetCellsTargetState();
         }
 
         private void InitializeMatrix()
@@ -71,12 +73,12 @@ namespace View
 
             foreach (Cell cell in availableCells)
             {
-                cell.Behaviour.IsTargetable(true);
-                cell.Behaviour.Highlight(true);
+                GameManager.GetBehaviourCell(cell).IsTargetable(true);
+                GameManager.GetBehaviourCell(cell).Highlight(true);
             }
         }
 
-        private static void ResetCellsTargetsState()
+        private static void ResetCellsTargetState()
         {
             Matrix.ResetCellsTargetState();
         }
@@ -88,20 +90,7 @@ namespace View
             foreach (Cell cell in cells)
             {
                 if (cell.IsOccupied)
-                    cell.Occupant.Behaviour.transform.position = cell.Coordinates.World;
-            }
-        }
-        
-        public static void ResetCellsTargetState()
-        {
-            Cell[,] grid = Matrix.GetCurrentGridSnapshot();
-            
-            for (int column = 0; column < Matrix.BoardSize; column++)
-            {
-                for (int row = 0; row < Matrix.BoardSize; row++)
-                {
-                    grid[column, row].Behaviour.IsTargetable(grid[column, row].IsOccupied);
-                }
+                    GameManager.GetBehaviourCell(cell).Occupant.transform.position = cell.Coordinates.World;
             }
         }
     }

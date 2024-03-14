@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Data;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -10,7 +11,7 @@ namespace Pieces
         public static Dictionary<string, GameObject> Prefabs;
 
         public Cell Cell;
-        public Side Side { get; private set; }
+        public Side Side { get; }
         public bool HasMoved { get; set; }
         
         public bool IsTheKing => this.GetType() == typeof(King);
@@ -68,7 +69,7 @@ namespace Pieces
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(Cell, other.Cell) && Equals(Behaviour, other.Behaviour) && Side == other.Side && HasMoved == other.HasMoved;
+            return Equals(Cell, other.Cell) && Side == other.Side && HasMoved == other.HasMoved;
         }
 
         public override bool Equals(object obj)
@@ -81,7 +82,17 @@ namespace Pieces
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Cell, Behaviour, (int)Side, HasMoved);
+            return HashCode.Combine((int)Side, IsTheKing, IsNotTheKing);
+        }
+
+        public static bool operator ==(Piece left, Piece right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(Piece left, Piece right)
+        {
+            return !Equals(left, right);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Data;
 using Managers;
 using UnityEngine;
 
@@ -6,11 +7,14 @@ namespace View
 {
     public class CellBehaviour: MonoBehaviour
     {
-        public Coordinates Coordinates;
-        
+        public Coordinates Coordinates { get; set; }
+        public PieceBehaviour Occupant { get; set; }
+
+        public string Name => gameObject.name;
+
         private MeshRenderer _mesh;
         private Collider _collider;
-    
+        
         private static readonly int Enable = Shader.PropertyToID("_Enable");
         private static readonly int IntersectionColor = Shader.PropertyToID("_IntersectionColor");
         private static readonly int IntersectionColorAlt = Shader.PropertyToID("_IntersectionColorAlt");
