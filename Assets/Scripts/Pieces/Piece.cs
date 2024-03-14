@@ -26,6 +26,8 @@ namespace Pieces
             Side = side;
             HasMoved = false;
         }
+        
+        protected abstract int Heuristic { get; }
 
         public static Piece Create(string prefabName, Cell originCell, Transform root)
         {
