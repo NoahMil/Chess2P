@@ -3,16 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-using MonoBehaviours;
-
 namespace Pieces
 {
-    public abstract class Piece
+    public abstract class Piece : IEquatable<Piece>
     {
         public static Dictionary<string, GameObject> Prefabs;
 
         public Cell Cell;
-        public PieceBehaviour Behaviour { get; private set; }
         public Side Side { get; private set; }
         public bool HasMoved { get; set; }
         
@@ -24,7 +21,6 @@ namespace Pieces
             Cell = cell;
             Quaternion rotation = side == Side.Light ? Quaternion.identity : Quaternion.Euler(0, -180, 0);
             GameObject piece = Object.Instantiate(prefab, cell.Coordinates.World, rotation, root);
-            Behaviour = piece.GetComponent<PieceBehaviour>();
             Side = side;
             HasMoved = false;
         }
@@ -66,6 +62,26 @@ namespace Pieces
 
             availableMoves.Add(cell);
             return true;
+        }
+
+        public bool Equals(Piece other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(Cell, other.Cell) && Equals(Behaviour, other.Behaviour) && Side == other.Side && HasMoved == other.HasMoved;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Piece)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Cell, Behaviour, (int)Side, HasMoved);
         }
     }
 }

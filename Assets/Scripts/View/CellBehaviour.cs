@@ -1,12 +1,13 @@
 ﻿using System;
+using Managers;
 using UnityEngine;
 
-using Managers;
-
-namespace MonoBehaviours
+namespace View
 {
     public class CellBehaviour: MonoBehaviour
     {
+        public Coordinates Coordinates;
+        
         private MeshRenderer _mesh;
         private Collider _collider;
     
@@ -18,6 +19,9 @@ namespace MonoBehaviours
 
         private void Awake()
         {
+            Vector3 position = transform.position;
+            Coordinates = new Coordinates(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.z));
+            
             _mesh = GetComponent<MeshRenderer>();
             _collider = GetComponent<Collider>();
             _initialColor = _mesh.material.GetColor(IntersectionColor);

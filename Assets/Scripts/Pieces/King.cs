@@ -10,7 +10,7 @@ namespace Pieces
         public override List<Cell> AvailableMoves()
         {
             List<Cell> availableMoves = new List<Cell>();
-            int currentColumn = this.Cell.Coordinates.Columns;
+            int currentColumn = this.Cell.Coordinates.Column;
             int currentRow = this.Cell.Coordinates.Row;
 
             int[] rowOffsets = { -1, -1, -1,  0, 0,  1, 1, 1 };

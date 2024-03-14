@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace MonoBehaviours
+namespace View
 {
     public class PieceBehaviour: MonoBehaviour
     {

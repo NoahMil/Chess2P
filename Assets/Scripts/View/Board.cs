@@ -1,20 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-
 using Managers;
 using Pieces;
+using UnityEngine;
 
-namespace MonoBehaviours
+namespace View
 {
     public class Board: MonoBehaviour
     {
-        [SerializeField] private GameObject _cellPrefab;
         [SerializeField] private Transform _cellsRoot;
         [SerializeField] private Transform _piecesRoot;
+        [SerializeField] private GameObject _cellPrefab;
         [SerializeField] private List<GameObject> _piecesPrefabs;
-    
-        private List<PieceBehaviour> _piecesBehaviours;
+
+        public static List<CellBehaviour> CellBehaviours;
+        public static List<PieceBehaviour> PieceBehaviours;
+
+        private void Awake()
+        {
+            foreach (Transform cell in _cellsRoot)
+                CellBehaviours.Add(cell.GetComponent<CellBehaviour>());
+
+            foreach (Transform piece in _piecesRoot)
+                PieceBehaviours.Add(piece.GetComponent<PieceBehaviour>());
+        }
 
         private void Start()
         {
@@ -80,6 +89,19 @@ namespace MonoBehaviours
             {
                 if (cell.IsOccupied)
                     cell.Occupant.Behaviour.transform.position = cell.Coordinates.World;
+            }
+        }
+        
+        public static void ResetCellsTargetState()
+        {
+            Cell[,] grid = Matrix.GetCurrentGridSnapshot();
+            
+            for (int column = 0; column < Matrix.BoardSize; column++)
+            {
+                for (int row = 0; row < Matrix.BoardSize; row++)
+                {
+                    grid[column, row].Behaviour.IsTargetable(grid[column, row].IsOccupied);
+                }
             }
         }
     }

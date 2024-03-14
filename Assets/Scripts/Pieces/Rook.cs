@@ -10,7 +10,7 @@ namespace Pieces
         public override List<Cell> AvailableMoves()
         {
             List<Cell> availableMoves = new List<Cell>();
-            int currentColumn = this.Cell.Coordinates.Columns;
+            int currentColumn = this.Cell.Coordinates.Column;
             int currentRow = this.Cell.Coordinates.Row;
 
             for (int row = currentRow + 1; row < Matrix.BoardSize; row++) // Upward

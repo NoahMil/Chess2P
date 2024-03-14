@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using MonoBehaviours;
+using View;
+using Pieces;
 
 namespace Managers
 {
@@ -18,8 +19,7 @@ namespace Managers
         private static bool _updateOnce;
 
         private static List<Cell> _checkResponsibles = new ();
-        private static List<Cell> _invalidCellsForKing = new ();
-        private static List<Cell> _validEscapeDestinations = new ();
+        private static Dictionary<Piece, List<Cell>> _validCheckMoves = new ();
 
         private bool _confirmEscape;
         private float _escapeTimer = 3f;
@@ -28,6 +28,7 @@ namespace Managers
         
         private void Awake()
         {
+            Board = GameObject.Find("Board").GetComponent<Board>();
             CurrentPlayerTurn = Side.Light;
             Checkmate = false;
         }
@@ -81,12 +82,16 @@ namespace Managers
 
         private static void CheckSelection(Cell cell)
         {
-            List<Cell> validMoves = GatherValidMoves();
-                    
-            if (_origin == null && validMoves.Contains(cell)) // If no piece have been selected, checks if the current selected can be played;
+            // If no piece have been selected, checks if the current selected is part of the Pieces of the valid moves Dictionnary
+            if (_origin == null && _validCheckMoves.ContainsKey(cell.Occupant))
+            {
                 SetOrigin(cell);
-            else if (_origin != null && _validEscapeDestinations.Contains(cell)) // If a piece have been selected to be played, verify if the destination is in the list that covers the check;
+            }
+            // If a piece have been selected to be played, verify if the destination matches one of the valid moves list from that Piece in the Dictionnary;
+            else if (_origin != null && _validCheckMoves[cell.Occupant].Contains(cell))
+            {
                 SetDestination(cell);
+            } 
             else
             {
                 Debug.Log($"{CurrentPlayerTurn.ToString()} King is in Check. No moves from this piece can escape it.");
@@ -143,7 +148,24 @@ namespace Managers
             Debug.Log($"Played {_destination.GetType()} from {_origin.Name} to {_destination.Name}");
                 
             Board.UpdateView();
+            HandleCheck();
             ChangeTurn();
+        }
+
+        private static void HandleCheck()
+        {
+            if (PlayerIsInCheck(Matrix.GetCurrentGridSnapshot(), OpponentTurn))
+            {
+                Check = true;
+                GatherValidMoves();
+                
+                if (_validCheckMoves.Count == 0) { // Chekmate;
+                    Debug.LogWarning("No moves can be made -> Checkmate");
+                    return;
+                }
+            }
+
+            Check = false;
         }
 
         private static void ChangeTurn()
@@ -157,7 +179,6 @@ namespace Managers
             _moves = null;
                 
             CurrentPlayerTurn = OpponentTurn;
-            Check = CurrentPlayerIsInCheck();
         }
 
         #endregion
@@ -190,11 +211,17 @@ namespace Managers
         #endregion
         
         #region Checks handling
-
-        private static bool CurrentPlayerIsInCheck()
+        
+        /// <summary>
+        /// Verify if the player from a specific side is in check from the supplied "snapshot" grid
+        /// </summary>
+        /// <param name="grid">The original grid or the duplicate to check</param>
+        /// <param name="sideToTest">Side of the player to verify</param>
+        /// <returns></returns>
+        private static bool PlayerIsInCheck(Cell[,] grid, Side sideToTest)
         {
-            Cell king = Matrix.GetKing(CurrentPlayerTurn);
-            List<Cell> opponentPieces = Matrix.GetPieceCells(OpponentTurn);
+            Cell king = Matrix.GetKing(grid, sideToTest);
+            List<Cell> opponentPieces = Matrix.GetPieceCells(grid, sideToTest == Side.Light ? Side.Dark : Side.Light);
 
             ClearChecks();
 
@@ -204,7 +231,7 @@ namespace Managers
 
                 foreach (Cell target in possibleMoves) // For each possibility
                 {
-                    if (target == king) // If one of them threaten the King
+                    if (target.Occupant == king.Occupant) // If one of them threaten the King
                     {
                         Debug.Log($"{opponentCell.Occupant.Side} {opponentCell.Occupant.GetType().Name} make the {king.Occupant.Side} {king.Occupant.GetType().Name} in check, tracking down...");
                         _checkResponsibles.Add(opponentCell); // Track the piece
@@ -217,10 +244,8 @@ namespace Managers
                     Debug.Log($"{_checkResponsibles.Count} threats have been detected towards {king.Occupant.Side} {king.Occupant.GetType().Name}");
                     foreach (Cell responsible in _checkResponsibles) // For each King's threats
                     {
-                        foreach (Cell cell in responsible.Occupant.AvailableMoves())  
-                        {
+                        foreach (Cell cell in responsible.Occupant.AvailableMoves()) {
                             cell.Behaviour.HighlightCheck(true);; // Highlight the threat line(s) 
-                            _invalidCellsForKing.Add(cell); // and track cells as invalid to play. Use later to extract possible moves for the King
                         }
                     }
 
@@ -239,43 +264,43 @@ namespace Managers
             }
                 
             _checkResponsibles.Clear();
-            _invalidCellsForKing.Clear();
         }
             
-        private static List<Cell> GatherValidMoves()
+        private static void GatherValidMoves()
         {
-            List<Cell> availableMoves = new();
             Cell[,] snapshot = Matrix.GetCurrentGridSnapshot();
 
-            foreach (Cell cell in snapshot) // For each piece from current player' side
+            foreach (Cell piece in snapshot) // For each piece from current player' side
             {
-                if (cell.Occupant == null || cell.Occupant.Side != CurrentPlayerTurn) continue;
+                if (piece.Occupant == null || piece.Occupant.Side != CurrentPlayerTurn) continue;
                 
-                foreach (Cell moves in cell.Occupant.AvailableMoves()) // For each moves this piece can achieve
+                foreach (Cell move in piece.Occupant.AvailableMoves()) // For each moves this piece can achieve
                 {
                     // Simulate a new grid (from the snapshot) by manually move the piece according to each of it's positions
-                    VirtualResolve(snapshot, cell);
-                    
-                    // Verify if there is any checks left
-                    // if (Checks) -> move not valid; continue;
-                    // else        -> move does resolve one or all the checks; Add move to valid list; m++
-                    
+                    VirtualResolve(snapshot, piece, move);
                 }
-                // if (m == 0) -> This piece can't resolve the Check(s); Iterate next piece;
+                // Iterate next piece
             }
-            
-            // if (availableMoves.Count == 0) -> No piece can't be played; Checkmate;
-            // else
-            return availableMoves; // Maybe push Checkmate verification upward;
         }
 
-        private static void VirtualResolve(Cell[,] snapshot, Cell moveToTest) // Resolve every possible movements from a snapshot
+        private static void VirtualResolve(Cell[,] snapshot, Cell origin, Cell destination) // Resolve every possible movements from a snapshot
         {
             Cell[,] virtualGrid = Matrix.DuplicateSnapshot(snapshot); // Preserve state for each piece' simulation
-            Cell virtualOrigin;
-            Cell virtualDestination;
-            
-            
+            Cell virtualOrigin = virtualGrid[origin.Coordinates.Row, origin.Coordinates.Column];
+            Cell virtualDestination = virtualGrid[destination.Coordinates.Row, destination.Coordinates.Column];
+                
+            virtualDestination.Occupant = virtualOrigin.Occupant;
+            virtualDestination.Occupant.Cell = virtualDestination;
+            virtualDestination.Occupant.HasMoved = true;
+            virtualOrigin.Occupant = null;
+
+            if (!PlayerIsInCheck(virtualGrid, OpponentTurn))
+            {
+                if (_validCheckMoves.ContainsKey(virtualDestination.Occupant))
+                    _validCheckMoves[virtualDestination.Occupant].Add(virtualDestination);
+                else
+                    _validCheckMoves.Add(virtualDestination.Occupant, new List<Cell> { virtualDestination });
+            }
         }
 
         #endregion
@@ -291,5 +316,18 @@ namespace Managers
         }
 
         #endregion
+
+        public static Cell GetDataCell(Coordinates coords)
+        {
+            return Matrix.GetCell(coords.Row, coords.Column);
+        }
+
+        public static CellBehaviour GetBehaviour(Coordinates coords)
+        {
+            foreach (CellBehaviour cell in Board.CellBehaviours)
+            {
+                if (cell.Coordinates)
+            }
+        }
     }
 }
