@@ -15,23 +15,21 @@ namespace View
         [SerializeField] private GameObject _cellPrefab;
         [SerializeField] private List<GameObject> _piecesPrefabs;
 
-        public static List<CellBehaviour> CellBehaviours;
-        public static List<PieceBehaviour> PieceBehaviours;
-
-        private void Awake()
-        {
-            foreach (Transform cell in _cellsRoot)
-                CellBehaviours.Add(cell.GetComponent<CellBehaviour>());
-
-            foreach (Transform piece in _piecesRoot)
-                PieceBehaviours.Add(piece.GetComponent<PieceBehaviour>());
-        }
+        public static readonly List<CellBehaviour> CellBehaviours = new ();
+        public static List<PieceBehaviour> PieceBehaviours = new ();
 
         private void Start()
         {
             InitializePiecesPrefabs();
             InitializeMatrix();
             InitializePieces();
+            
+            foreach (Transform cell in _cellsRoot)
+                CellBehaviours.Add(cell.GetComponent<CellBehaviour>());
+
+            foreach (Transform piece in _piecesRoot)
+                PieceBehaviours.Add(piece.GetComponent<PieceBehaviour>());
+            
             ResetCellsTargetState();
         }
 

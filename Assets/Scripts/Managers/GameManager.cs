@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -34,7 +35,10 @@ namespace Managers
 
         public static CellBehaviour GetBehaviourCell(Cell dataCell)
         {
-            return dataCell == null ? null : Board.CellBehaviours.First(cell => cell.Coordinates.Equals(dataCell.Coordinates));
+            if (dataCell == null)
+                throw new Exception($"Unexistant Cell request in Grid");
+                    
+            return Board.CellBehaviours.First(cell => cell.Coordinates.Equals(dataCell.Coordinates));
         }
 
         #endregion
