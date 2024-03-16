@@ -1,4 +1,5 @@
 ﻿using System;
+using Data;
 using UnityEngine;
 
 namespace View
@@ -17,6 +18,14 @@ namespace View
         {
             _mesh = GetComponent<MeshRenderer>();
             _initialColor = _mesh.material.GetColor(FresnelColor);
+        }
+
+        public static void Create(Cell cell, GameObject prefab, Transform root)
+        {
+            Side side = cell.Occupant.Side;
+            Quaternion rotation = side == Side.Light ? Quaternion.identity : Quaternion.Euler(0, -180, 0);
+            
+            Instantiate(prefab, cell.Coordinates.World, rotation, root);
         }
 
         public void Highlight(bool enable)

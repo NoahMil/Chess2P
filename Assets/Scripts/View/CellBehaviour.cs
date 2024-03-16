@@ -35,6 +35,18 @@ namespace View
         {
             GameManager.SelectCell(Matrix.GetCell(gameObject.name));
         }
+        
+        public static void InitBoard(GameObject prefab, Transform root)
+        {
+            for (int row = 0; row < Matrix.BoardSize; row++)
+            {
+                for (int column = 0; column < Matrix.BoardSize; column++)
+                {
+                    GameObject cell = Instantiate(prefab, Matrix.GetCell(column, row).Coordinates.World, Quaternion.identity, root);
+                    cell.name = (char)('A' + column) + (row + 1).ToString();
+                }
+            }
+        }
 
         public void IsTargetable(bool enable)
         {

@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-
 using Data;
-using View;
 using Pieces;
+using UnityEngine;
+using View;
 
 namespace Managers
 {
@@ -212,7 +211,7 @@ namespace Managers
             }
                     
             _origin = cell;
-            GetBehaviourCell(_origin).Occupant.Highlight(true);
+            GetBehaviourCell(_origin).Occupant.Highlight(true); //TODO: NullReferenceException when selecting a PieceBehaviour. Debugging session required to investigate new Initialization results.
                     
             _moves = Matrix.GetMoves(_origin);
             Board.EnableCellsTargets(_moves);
@@ -263,7 +262,7 @@ namespace Managers
                     foreach (Cell responsible in _checkResponsibles) // For each King's threats
                     {
                         foreach (Cell cell in responsible.Occupant.AvailableMoves()) {
-                            GetBehaviourCell(cell).HighlightCheck(true);; // Highlight the threat line(s) 
+                            GetBehaviourCell(cell).HighlightCheck(true); // Highlight the threat line(s) 
                         }
                     }
 

@@ -21,7 +21,7 @@ namespace View
         private void Start()
         {
             InitializePiecesPrefabs();
-            InitializeMatrix();
+            InitializeCells();
             InitializePieces();
             
             foreach (Transform cell in _cellsRoot)
@@ -33,21 +33,27 @@ namespace View
             ResetCellsTargetState();
         }
 
-        private void InitializeMatrix()
+        private void InitializeCells() //TODO: Refactor
         {
-            Matrix.Init(_cellPrefab, _cellsRoot);
+            Matrix.Init();
+            CellBehaviour.InitBoard(_cellPrefab, _cellsRoot);
         }
 
-        private void InitializePieces()
+        private void InitializePieces() //TODO: Refactor
         {
             string[] pieceOrder = { "Rook", "Knight", "Bishop", "Queen", "King", "Bishop", "Knight", "Rook" };
         
             for (int column = 0; column < Matrix.BoardSize; column++)
             {
-                Matrix.GetCell(column, 0).Occupant = Piece.Create("Light" + pieceOrder[column], Matrix.GetCell(column, 0), _piecesRoot);
-                Matrix.GetCell(column, 1).Occupant = Piece.Create("LightPawn", Matrix.GetCell(column, 1), _piecesRoot);
-                Matrix.GetCell(column, 7).Occupant = Piece.Create("Dark" + pieceOrder[column],  Matrix.GetCell(column, 7), _piecesRoot);
-                Matrix.GetCell(column, 6).Occupant = Piece.Create("DarkPawn", Matrix.GetCell(column, 6), _piecesRoot);
+                Matrix.GetCell(column, 0).Occupant = Piece.Create("Light" + pieceOrder[column], Matrix.GetCell(column, 0));
+                Matrix.GetCell(column, 1).Occupant = Piece.Create("LightPawn", Matrix.GetCell(column, 1));
+                Matrix.GetCell(column, 7).Occupant = Piece.Create("Dark" + pieceOrder[column],  Matrix.GetCell(column, 7));
+                Matrix.GetCell(column, 6).Occupant = Piece.Create("DarkPawn", Matrix.GetCell(column, 6));
+                
+                PieceBehaviour.Create(Matrix.GetCell(column, 0), Piece.Prefabs["Light" + pieceOrder[column]], _piecesRoot);
+                PieceBehaviour.Create(Matrix.GetCell(column, 1), Piece.Prefabs["LightPawn"], _piecesRoot);
+                PieceBehaviour.Create(Matrix.GetCell(column, 7), Piece.Prefabs["Dark" + pieceOrder[column]], _piecesRoot);
+                PieceBehaviour.Create(Matrix.GetCell(column, 6), Piece.Prefabs["DarkPawn"], _piecesRoot);
             }
         }
 

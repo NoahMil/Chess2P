@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using Data;
-using UnityEngine;
 
 namespace Pieces
 {
     public class Pawn : Piece
     {
-        public Pawn(Cell cell, GameObject prefab, Transform root, Side side) : base(cell, prefab, root, side) {}
+        public Pawn(Cell cell, Side side) : base(cell, side) {}
 
         public override List<Cell> AvailableMoves()
         {

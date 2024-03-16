@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using Data;
-using UnityEngine;
 
 namespace Pieces
 {
     public class King : Piece
     {
-        public King(Cell cell, GameObject prefab, Transform root, Side side) : base(cell, prefab, root, side) {}
+        public King(Cell cell, Side side) : base(cell, side) {}
 
         public override List<Cell> AvailableMoves()
         {

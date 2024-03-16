@@ -1,7 +1,5 @@
 ﻿using System;
 using Pieces;
-using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Data
 {
@@ -12,18 +10,12 @@ namespace Data
 
         public bool IsOccupied => Occupant != null;
 
-        public Cell(GameObject prefab, Transform root, int column, int row)
-        {
+        public Cell(int column, int row) {
             Coordinates = new Coordinates(column, row);
-            GameObject cell = Object.Instantiate(prefab, Coordinates.World, Quaternion.identity, root);
-
-            cell.name = (char)('A' + column) + (row + 1).ToString();
         }
 
-        public Cell(Cell copy)
-        {
-            Coordinates = copy.Coordinates;
-            Occupant = copy.Occupant;
+        public Cell(Cell copy) {
+            this.Coordinates = new Coordinates(copy.Coordinates.Column, copy.Coordinates.Row);
         }
 
         public bool Equals(Cell other)

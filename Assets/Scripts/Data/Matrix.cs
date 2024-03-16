@@ -11,13 +11,13 @@ namespace Data
         public const int BoardSize = 8;
         private static readonly Cell[,] Grid = new Cell[BoardSize, BoardSize];
 
-        public static void Init(GameObject cellPrefab, Transform cellsRoot)
+        public static void Init()
         {
             for (int row = 0; row < BoardSize; row++)
             {
                 for (int column = 0; column < BoardSize; column++)
                 {
-                    Grid[row, column] = new Cell(cellPrefab, cellsRoot, column, row);
+                    Grid[row, column] = new Cell(column, row);
                 }
             }
         }

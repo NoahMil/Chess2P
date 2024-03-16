@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using Data;
-using UnityEngine;
 
 namespace Pieces
 {
     public class Queen : Piece
     {
-        public Queen(Cell cell, GameObject prefab, Transform root, Side side) : base(cell, prefab, root, side) {}
+        public Queen(Cell cell, Side side) : base(cell, side) {}
 
         public override List<Cell> AvailableMoves()
         {
@@ -16,7 +15,7 @@ namespace Pieces
             
             GetAlignedCells(availableMoves, currentColumn, currentRow);
             GetDiagonalCells(availableMoves, currentColumn, currentRow);
-
+            
             return availableMoves;
         }
         
