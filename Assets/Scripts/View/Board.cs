@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Data;
 using UnityEngine;
 
 using Managers;
+using Data;
+using Enums;
 using Pieces;
 
 namespace View
@@ -15,46 +16,22 @@ namespace View
         [SerializeField] private GameObject _cellPrefab;
         [SerializeField] private List<GameObject> _piecesPrefabs;
 
-        public static readonly List<CellBehaviour> CellBehaviours = new ();
-        public static List<PieceBehaviour> PieceBehaviours = new ();
+        public static List<CellBehaviour> CellBehaviours;
+        public static List<PieceBehaviour> PieceBehaviours;
 
         private void Start()
         {
+            Initialize();
+            // Matrix.Debug();
+        }
+
+        private void Initialize()
+        {
             InitializePiecesPrefabs();
-            InitializeCells();
-            InitializePieces();
-            
-            foreach (Transform cell in _cellsRoot)
-                CellBehaviours.Add(cell.GetComponent<CellBehaviour>());
-
-            foreach (Transform piece in _piecesRoot)
-                PieceBehaviours.Add(piece.GetComponent<PieceBehaviour>());
-            
-            ResetCellsTargetState();
-        }
-
-        private void InitializeCells() //TODO: Refactor
-        {
             Matrix.Init();
-            CellBehaviour.InitBoard(_cellPrefab, _cellsRoot);
-        }
-
-        private void InitializePieces() //TODO: Refactor
-        {
-            string[] pieceOrder = { "Rook", "Knight", "Bishop", "Queen", "King", "Bishop", "Knight", "Rook" };
-        
-            for (int column = 0; column < Matrix.BoardSize; column++)
-            {
-                Matrix.GetCell(column, 0).Occupant = Piece.Create("Light" + pieceOrder[column], Matrix.GetCell(column, 0));
-                Matrix.GetCell(column, 1).Occupant = Piece.Create("LightPawn", Matrix.GetCell(column, 1));
-                Matrix.GetCell(column, 7).Occupant = Piece.Create("Dark" + pieceOrder[column],  Matrix.GetCell(column, 7));
-                Matrix.GetCell(column, 6).Occupant = Piece.Create("DarkPawn", Matrix.GetCell(column, 6));
-                
-                PieceBehaviour.Create(Matrix.GetCell(column, 0), Piece.Prefabs["Light" + pieceOrder[column]], _piecesRoot);
-                PieceBehaviour.Create(Matrix.GetCell(column, 1), Piece.Prefabs["LightPawn"], _piecesRoot);
-                PieceBehaviour.Create(Matrix.GetCell(column, 7), Piece.Prefabs["Dark" + pieceOrder[column]], _piecesRoot);
-                PieceBehaviour.Create(Matrix.GetCell(column, 6), Piece.Prefabs["DarkPawn"], _piecesRoot);
-            }
+            CellBehaviours = CellBehaviour.InitBoard(_cellPrefab, _cellsRoot);
+            PieceBehaviours = PieceBehaviour.InitBoard(_piecesRoot);
+            ResetCellsTargetState();
         }
 
         private void InitializePiecesPrefabs()
@@ -64,6 +41,8 @@ namespace View
             foreach (GameObject prefab in _piecesPrefabs)
                 Piece.Prefabs.Add(prefab.name, prefab);
         }
+
+        #region View
 
         public static void EnableCellsTargets(List<Cell> availableCells)
         {
@@ -78,7 +57,7 @@ namespace View
             foreach (Cell cell in availableCells)
             {
                 GameManager.GetBehaviourCell(cell).IsTargetable(true);
-                GameManager.GetBehaviourCell(cell).Highlight(true);
+                GameManager.GetBehaviourCell(cell).Highlight(HighlightType.Active);
             }
         }
 
@@ -97,5 +76,7 @@ namespace View
                     GameManager.GetBehaviourCell(cell).Occupant.transform.position = cell.Coordinates.World;
             }
         }
+
+        #endregion
     }
 }

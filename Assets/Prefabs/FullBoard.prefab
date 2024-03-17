@@ -79,7 +79,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d6afa3725b44d09860491e4baf922ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PiecesPrefabs:
+  _cellsRoot: {fileID: 7537267371302615438}
+  _piecesRoot: {fileID: 279364724541889379}
+  _cellPrefab: {fileID: 4832448785682019789, guid: f0c19b4729dabaf4fb7816e5cf76d020,
+    type: 3}
+  _piecesPrefabs:
   - {fileID: 8459827850931064318, guid: 605e7dad1c685fe498979f4dd10f52df, type: 3}
   - {fileID: 5518013793803017339, guid: cebce5a9e0418e547a7c8ebf926472d7, type: 3}
   - {fileID: 1435564203977009855, guid: bc181cc948c11e844b3dca59734c45b7, type: 3}
@@ -92,10 +96,6 @@ MonoBehaviour:
   - {fileID: 6215863499272766248, guid: c65c592daeb633d4d8dc7f3722004202, type: 3}
   - {fileID: 9158476374253092203, guid: 3fb20e7f959c017489b8592935d59bac, type: 3}
   - {fileID: 4318604001257402810, guid: 0ee6f61965605db489e809241beda844, type: 3}
-  _cellsRoot: {fileID: 7537267371302615438}
-  _piecesRoot: {fileID: 279364724541889379}
-  _cellPrefab: {fileID: 4832448785682019789, guid: f0c19b4729dabaf4fb7816e5cf76d020,
-    type: 3}
 --- !u!33 &8742555245434321083
 MeshFilter:
   m_ObjectHideFlags: 0

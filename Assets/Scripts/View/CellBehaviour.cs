@@ -1,7 +1,11 @@
 ﻿using System;
-using Data;
-using Managers;
+using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
+
+using Managers;
+using Data;
+using Enums;
 
 namespace View
 {
@@ -36,16 +40,21 @@ namespace View
             GameManager.SelectCell(Matrix.GetCell(gameObject.name));
         }
         
-        public static void InitBoard(GameObject prefab, Transform root)
+        public static List<CellBehaviour> InitBoard(GameObject prefab, Transform root)
         {
+            List<CellBehaviour> cellBehaviours = new ();
+            
             for (int row = 0; row < Matrix.BoardSize; row++)
             {
                 for (int column = 0; column < Matrix.BoardSize; column++)
                 {
                     GameObject cell = Instantiate(prefab, Matrix.GetCell(column, row).Coordinates.World, Quaternion.identity, root);
                     cell.name = (char)('A' + column) + (row + 1).ToString();
+                    cellBehaviours.Add(cell.GetComponent<CellBehaviour>());
                 }
             }
+
+            return cellBehaviours;
         }
 
         public void IsTargetable(bool enable)
@@ -53,20 +62,25 @@ namespace View
             _collider.enabled = enable;
         }
 
-        public void Highlight(bool enable)
+        public void Highlight(HighlightType type)
         {
-            int value = Convert.ToInt32(enable);
-            _mesh.material.SetColor(IntersectionColor, _initialColor);
-            _mesh.material.SetFloat(Enable, value);
-        }
-
-        public void HighlightCheck(bool enable)
-        {
-            int value = Convert.ToInt32(enable);
-            Color altColor = _mesh.material.GetColor(IntersectionColorAlt);
-            
-            _mesh.material.SetColor(IntersectionColor, altColor);
-            _mesh.material.SetFloat(Enable, value);
+            switch (type)
+            {
+                case HighlightType.None:
+                    _mesh.material.SetFloat(Enable, 0);
+                    break;
+                case HighlightType.Active:
+                    _mesh.material.SetColor(IntersectionColor, _initialColor);
+                    _mesh.material.SetFloat(Enable, 1);
+                    break;
+                case HighlightType.Error:
+                    Color altColor = _mesh.material.GetColor(IntersectionColorAlt);
+                    _mesh.material.SetColor(IntersectionColor, altColor);
+                    _mesh.material.SetFloat(Enable, 1);
+                    break;
+                default:
+                    throw new InvalidEnumArgumentException($"Invalid {type.ToString()} supplied for piece highlighting");
+            }
         }
     }
 }

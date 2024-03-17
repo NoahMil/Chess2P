@@ -18,11 +18,12 @@ namespace Data
             this.Coordinates = new Coordinates(copy.Coordinates.Column, copy.Coordinates.Row);
         }
 
-        public bool Equals(Cell other)
+        //TODO: NUllReferenceException here. Unknow reason yet. Stack Trace is unchanged and calls comes from HandleCheck() and may implies Matrix.GetCurrentGridSnapshot()
+        public bool Equals(Cell other) 
         {
             if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Coordinates.Equals(other.Coordinates) && Equals(Occupant, other.Occupant);
+            if (ReferenceEquals(this, other)) return true; // If commented: Equals won't return true if the same reference is shared, it will only test equivalence
+            return Coordinates.Equals(other.Coordinates) && Occupant.Equals(other.Occupant);
         }
 
         public override bool Equals(object obj)
@@ -35,7 +36,7 @@ namespace Data
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Coordinates, Occupant);
+            return HashCode.Combine(Coordinates);
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-
+using Enums;
 using Managers;
+using UnityEngine.Assertions;
 
 namespace Data
 {
@@ -13,11 +13,11 @@ namespace Data
 
         public static void Init()
         {
-            for (int row = 0; row < BoardSize; row++)
+            for (int column = 0; column < BoardSize; column++)
             {
-                for (int column = 0; column < BoardSize; column++)
+                for (int row = 0; row < BoardSize; row++)
                 {
-                    Grid[row, column] = new Cell(column, row);
+                    Grid[column, row] = new Cell(column, row);
                 }
             }
         }
@@ -183,6 +183,8 @@ namespace Data
         public static Cell GetKing(Cell[,] grid, Side side)
         {
             Cell cell;
+
+            if (grid is not { Length: BoardSize * BoardSize }) throw new ArgumentException("Grid snapshot is not valid at that point");
         
             for (int column = 0; column < BoardSize; column++)
             {
@@ -206,11 +208,12 @@ namespace Data
         {
             Cell[,] snapshot = new Cell[BoardSize, BoardSize];
 
-            for (int row = 0; row < BoardSize; row++)
+            for (int column = 0; column < BoardSize; column++)
             {
-                for (int col = 0; col < BoardSize; col++)
+                for (int row = 0; row < BoardSize; row++)
                 {
-                    snapshot[row, col] = new Cell(Grid[row, col]);
+                    snapshot[column, row] = new Cell(Grid[column, row]);
+                    if (!snapshot[column, row].Equals(Grid[column, row])) throw new Exception("Comparison fails: Cell duplication compromised copy from the source.");
                 }
             }
 
@@ -242,5 +245,28 @@ namespace Data
                 }
             }
         }
+
+        #region Debug
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static void Debug()
+        {
+            string debug = "Debug Matrix :\n\n";
+            for (int column = 0; column < BoardSize; column++)
+            {
+                string rowCells = "";
+                for (int row = 0; row < BoardSize; row++)
+                {
+                    rowCells += GameManager.GetBehaviourCell(GetCell(column, row)).Name + " ";
+                }
+                
+                debug += rowCells + "\n";
+            }
+            UnityEngine.Debug.Log(debug);
+        }
+
+        #endregion
     }
 }

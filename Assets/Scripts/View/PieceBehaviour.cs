@@ -1,6 +1,12 @@
 ﻿using System;
-using Data;
+using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
+
+using Managers;
+using Data;
+using Enums;
+using Pieces;
 
 namespace View
 {
@@ -20,29 +26,59 @@ namespace View
             _initialColor = _mesh.material.GetColor(FresnelColor);
         }
 
-        public static void Create(Cell cell, GameObject prefab, Transform root)
+        public static PieceBehaviour Create(Cell cell, GameObject prefab, Transform root)
         {
             Side side = cell.Occupant.Side;
             Quaternion rotation = side == Side.Light ? Quaternion.identity : Quaternion.Euler(0, -180, 0);
             
-            Instantiate(prefab, cell.Coordinates.World, rotation, root);
+            return Instantiate(prefab, cell.Coordinates.World, rotation, root).GetComponent<PieceBehaviour>();
         }
 
-        public void Highlight(bool enable)
+        public static List<PieceBehaviour> InitBoard(Transform root)
         {
-            int value = Convert.ToInt32(enable);
-            _mesh.material.SetColor(FresnelColor, _initialColor);
-            _mesh.material.SetFloat(EnableFresnel, value);
+            List<PieceBehaviour> pieceBehaviours = new ();
+            string[] pieceOrder = { "Rook", "Knight", "Bishop", "Queen", "King", "Bishop", "Knight", "Rook" };
+
+            for (int column = 0; column < Matrix.BoardSize; column++)
+            {
+                Matrix.GetCell(column, 0).Occupant = Piece.Create("Light" + pieceOrder[column], Matrix.GetCell(column, 0));
+                Matrix.GetCell(column, 1).Occupant = Piece.Create("LightPawn", Matrix.GetCell(column, 1));
+                Matrix.GetCell(column, 7).Occupant = Piece.Create("Dark" + pieceOrder[column], Matrix.GetCell(column, 7));
+                Matrix.GetCell(column, 6).Occupant = Piece.Create("DarkPawn", Matrix.GetCell(column, 6));
+
+                GameManager.GetBehaviourCell(Matrix.GetCell(column, 0)).Occupant = Create(Matrix.GetCell(column, 0), Piece.Prefabs["Light" + pieceOrder[column]], root);
+                GameManager.GetBehaviourCell(Matrix.GetCell(column, 1)).Occupant = Create(Matrix.GetCell(column, 1), Piece.Prefabs["LightPawn"], root);
+                GameManager.GetBehaviourCell(Matrix.GetCell(column, 7)).Occupant = Create(Matrix.GetCell(column, 7), Piece.Prefabs["Dark" + pieceOrder[column]], root);
+                GameManager.GetBehaviourCell(Matrix.GetCell(column, 6)).Occupant = Create(Matrix.GetCell(column, 6), Piece.Prefabs["DarkPawn"], root);
+
+                pieceBehaviours.Add(GameManager.GetBehaviourCell(Matrix.GetCell(column, 0)).Occupant);
+                pieceBehaviours.Add(GameManager.GetBehaviourCell(Matrix.GetCell(column, 1)).Occupant);
+                pieceBehaviours.Add(GameManager.GetBehaviourCell(Matrix.GetCell(column, 7)).Occupant);
+                pieceBehaviours.Add(GameManager.GetBehaviourCell(Matrix.GetCell(column, 6)).Occupant);
+            }
+
+            return pieceBehaviours;
         }
 
-        public void HighlightError(bool enable)
+        public void Highlight(HighlightType type)
         {
-            int value = Convert.ToInt32(enable);
-
-            Color altColor = _mesh.material.GetColor(FresnelAltColor);
-            
-            _mesh.material.SetColor(FresnelColor, altColor);
-            _mesh.material.SetFloat(EnableFresnel, value);
+            switch (type)
+            {
+                case HighlightType.None:
+                    _mesh.material.SetFloat(EnableFresnel, 0);
+                    break;
+                case HighlightType.Active:
+                    _mesh.material.SetColor(FresnelColor, _initialColor);
+                    _mesh.material.SetFloat(EnableFresnel, 1);
+                    break;
+                case HighlightType.Error:
+                    Color altColor = _mesh.material.GetColor(FresnelAltColor);
+                    _mesh.material.SetColor(FresnelColor, altColor);
+                    _mesh.material.SetFloat(EnableFresnel, 1);
+                    break;
+                default:
+                    throw new InvalidEnumArgumentException($"Invalid {type.ToString()} supplied for piece highlighting");
+            }
         }
     }
 }

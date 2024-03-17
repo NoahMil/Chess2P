@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Data;
-using Pieces;
 using UnityEngine;
+
+using Data;
+using Enums;
 using View;
+using Pieces;
 
 namespace Managers
 {
@@ -137,14 +139,14 @@ namespace Managers
         {
             if (_origin == null) return;
                     
-            GetBehaviourCell(_origin).Occupant.Highlight(false);
-            GetBehaviourCell(_origin).Occupant.HighlightError(false);
+            GetBehaviourCell(_origin).Occupant.Highlight(HighlightType.None);
             _origin = null;
 
             if (_moves == null) return;
 
             foreach (Cell cell in _moves)
-                GetBehaviourCell(cell).Highlight(false);
+                GetBehaviourCell(cell).Highlight(HighlightType.None);
+            
             _moves = null;
         }
 
@@ -152,15 +154,18 @@ namespace Managers
 
         private static void ResolveMovement()
         {
-            GetBehaviourCell(_origin).Occupant.Highlight(false);
+            GetBehaviourCell(_origin).Occupant.Highlight(HighlightType.None);
                 
             if (_destination is { IsOccupied: true } && _destination.Occupant.Side == OpponentTurn)
                 Destroy(GetBehaviourCell(_destination).Occupant.gameObject);
 
             _destination.Occupant = _origin.Occupant;
             _destination.Occupant.Cell = _destination; // I need to update the Piece's internal reference to it's holding Cell. Since the AvailableMove works automously (without re-providing the cell as a paramater)
+            GetBehaviourCell(_destination).Occupant = GetBehaviourCell(_origin).Occupant; // Manually move the Behaviour cell's Occupant since the Data/View decoupling
             _destination.Occupant.HasMoved = true;
+
             _origin.Occupant = null;
+            GetBehaviourCell(_origin).Occupant = null; // Manually drop the _origin Behaviour cell's Occupant to null too;
 
             Debug.Log($"Played {_destination.GetType()} from {GetBehaviourCell(_origin).Name} to {GetBehaviourCell(_destination).Name}");
                 
@@ -192,7 +197,7 @@ namespace Managers
             _origin = null;
 
             foreach (Cell cell in _moves) // Reset Cells highlighting
-                GetBehaviourCell(cell).Highlight(false);
+                GetBehaviourCell(cell).Highlight(HighlightType.None);
             _moves = null;
                 
             CurrentPlayerTurn = OpponentTurn;
@@ -211,9 +216,10 @@ namespace Managers
             }
                     
             _origin = cell;
-            GetBehaviourCell(_origin).Occupant.Highlight(true); //TODO: NullReferenceException when selecting a PieceBehaviour. Debugging session required to investigate new Initialization results.
-                    
             _moves = Matrix.GetMoves(_origin);
+
+            GetBehaviourCell(_origin).Occupant.Highlight(_moves.Count > 0 ? HighlightType.Active : HighlightType.Error);
+
             Board.EnableCellsTargets(_moves);
         }
 
@@ -248,7 +254,7 @@ namespace Managers
 
                 foreach (Cell target in possibleMoves) // For each possibility
                 {
-                    if (target.Occupant == king.Occupant) // If one of them threaten the King
+                    if (target.Occupant.Equals(king.Occupant)) // If one of them threaten the King
                     {
                         Debug.Log($"{opponentCell.Occupant.Side} {opponentCell.Occupant.GetType().Name} make the {king.Occupant.Side} {king.Occupant.GetType().Name} in check, tracking down...");
                         _checkResponsibles.Add(opponentCell); // Track the piece
@@ -262,7 +268,7 @@ namespace Managers
                     foreach (Cell responsible in _checkResponsibles) // For each King's threats
                     {
                         foreach (Cell cell in responsible.Occupant.AvailableMoves()) {
-                            GetBehaviourCell(cell).HighlightCheck(true); // Highlight the threat line(s) 
+                            GetBehaviourCell(cell).Highlight(HighlightType.Error); // Highlight the threat line(s) 
                         }
                     }
 
@@ -277,7 +283,7 @@ namespace Managers
         {
             foreach (Cell cell in _checkResponsibles)
             {
-                GetBehaviourCell(cell).Highlight(false);
+                GetBehaviourCell(cell).Highlight(HighlightType.None);
             }
                 
             _checkResponsibles.Clear();
@@ -329,7 +335,7 @@ namespace Managers
         }
 
         public static void ShowNoMovesAvailable() {
-            GetBehaviourCell(_origin).Occupant.HighlightError(true);
+            GetBehaviourCell(_origin).Occupant.Highlight(HighlightType.Error);
         }
 
         #endregion

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using Data;
+using Enums;
 
 namespace Pieces
 {
@@ -17,7 +18,7 @@ namespace Pieces
         public bool IsTheKing => this.GetType() == typeof(King);
         public bool IsNotTheKing => this.GetType() != typeof(King);
         
-        protected Piece(Cell cell, Side side) // TODO : Refactor
+        protected Piece(Cell cell, Side side)
         {
             Cell = cell;
             Side = side;
@@ -63,34 +64,25 @@ namespace Pieces
             return true;
         }
 
+
         public bool Equals(Piece other)
         {
             if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Equals(Cell, other.Cell) && Side == other.Side && HasMoved == other.HasMoved;
+            if (ReferenceEquals(this, other)) return true; // If commented: Only test equivalence
+            return Cell.Equals(other.Cell) && Side == other.Side && HasMoved == other.HasMoved;
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
+            if (ReferenceEquals(this, obj)) return true; // If commented: Only test equivalence
             if (obj.GetType() != this.GetType()) return false;
             return Equals((Piece)obj);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine((int)Side, IsTheKing, IsNotTheKing);
-        }
-
-        public static bool operator ==(Piece left, Piece right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(Piece left, Piece right)
-        {
-            return !Equals(left, right);
+            return HashCode.Combine((int)Side);
         }
     }
 }
