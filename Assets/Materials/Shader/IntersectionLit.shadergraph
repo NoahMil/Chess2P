@@ -17,6 +17,9 @@
         },
         {
             "m_Id": "eb7e53ba65274b348760f8d17c9c0ecf"
+        },
+        {
+            "m_Id": "5a4dbea5b7dc46a3a1858b640b057104"
         }
     ],
     "m_Keywords": [],
@@ -560,6 +563,7 @@
     "m_OutputNode": {
         "m_Id": ""
     },
+    "m_SubDatas": [],
     "m_ActiveTargets": [
         {
             "m_Id": "ee329f0cc3bd45b292f350d045247e23"
@@ -1830,6 +1834,36 @@
     "m_CustomColors": {
         "m_SerializableColors": []
     }
+}
+
+{
+    "m_SGVersion": 3,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.ColorShaderProperty",
+    "m_ObjectId": "5a4dbea5b7dc46a3a1858b640b057104",
+    "m_Guid": {
+        "m_GuidSerialized": "96483e27-a8ff-4eed-9cf7-7c01cab5eac8"
+    },
+    "m_Name": "IntersectionColorAlt",
+    "m_DefaultRefNameVersion": 1,
+    "m_RefNameGeneratedByDisplayName": "IntersectionColorAlt",
+    "m_DefaultReferenceName": "_IntersectionColorAlt",
+    "m_OverrideReferenceName": "",
+    "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
+    "m_DismissedVersion": 0,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": {
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0,
+        "a": 0.0
+    },
+    "isMainColor": false,
+    "m_ColorMode": 1
 }
 
 {
@@ -3293,6 +3327,9 @@
         },
         {
             "m_Id": "be6b049665024f239b75facccdb3b310"
+        },
+        {
+            "m_Id": "5a4dbea5b7dc46a3a1858b640b057104"
         },
         {
             "m_Id": "2f28a1c62f2e44c29e2e630de17f0276"

@@ -89,7 +89,37 @@ public static class Matrix
 
     public static List<Cell> GetMoves(Cell cell)
     {
-        return cell.Occupant.GetAvailableMoves(cell);
+        return cell.Occupant.AvailableMoves();
+    }
+
+    public static Cell[,] GetCurrentGridSnapshot() // Deep Copy
+    {
+        Cell[,] snapshot = new Cell[BoardSize, BoardSize];
+
+        for (int row = 0; row < BoardSize; row++)
+        {
+            for (int col = 0; col < BoardSize; col++)
+            {
+                snapshot[row, col] = new Cell(Grid[row, col]);
+            }
+        }
+
+        return snapshot;
+    }
+
+    public static Cell[,] DuplicateSnapshot(Cell[,] snapshot)
+    {
+        Cell[,] duplicate = new Cell[BoardSize, BoardSize];
+
+        for (int row = 0; row < BoardSize; row++)
+        {
+            for (int col = 0; col < BoardSize; col++)
+            {
+                duplicate[row, col] = new Cell(snapshot[row, col]);
+            }
+        }
+
+        return duplicate;
     }
 
     public static void ResetCellsTargetState()

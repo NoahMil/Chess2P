@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Managers;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Pieces
@@ -8,12 +6,14 @@ namespace Pieces
     public class Queen : Piece
     {
         public Queen(Cell cell, GameObject prefab, Transform root, Side side) : base(cell, prefab, root, side) {}
+
+        public override int HeuristicScore => 10;
         
-        public override List<Cell> GetAvailableMoves(Cell currentCell)
+        public override List<Cell> AvailableMoves()
         {
             List<Cell> availableMoves = new List<Cell>();
-            int currentColumn = currentCell.Coordinates.Columns;
-            int currentRow = currentCell.Coordinates.Row;
+            int currentColumn = this.Cell.Coordinates.Columns;
+            int currentRow = this.Cell.Coordinates.Row;
             
             GetAlignedCells(availableMoves, currentColumn, currentRow);
             GetDiagonalCells(availableMoves, currentColumn, currentRow);

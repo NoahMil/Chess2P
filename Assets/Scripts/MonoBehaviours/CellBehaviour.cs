@@ -12,14 +12,15 @@ namespace MonoBehaviours
     
         private static readonly int Enable = Shader.PropertyToID("_Enable");
         private static readonly int IntersectionColor = Shader.PropertyToID("_IntersectionColor");
-
-        public static Color defaultColor;
+        private static readonly int IntersectionColorAlt = Shader.PropertyToID("_IntersectionColorAlt");
         
+        private static Color _initialColor;
+
         private void Awake()
         {
             _mesh = GetComponent<MeshRenderer>();
             _collider = GetComponent<Collider>();
-            defaultColor = _mesh.material.GetColor(IntersectionColor);
+            _initialColor = _mesh.material.GetColor(IntersectionColor);
         }
 
         private void OnMouseDown()
@@ -32,10 +33,19 @@ namespace MonoBehaviours
             _collider.enabled = enable;
         }
 
-        public void Highlight(bool enable, Color color)
+        public void Highlight(bool enable)
         {
             int value = Convert.ToInt32(enable);
-            _mesh.material.SetColor(IntersectionColor, color);
+            _mesh.material.SetColor(IntersectionColor, _initialColor);
+            _mesh.material.SetFloat(Enable, value);
+        }
+
+        public void HighlightCheck(bool enable)
+        {
+            int value = Convert.ToInt32(enable);
+            Color altColor = _mesh.material.GetColor(IntersectionColorAlt);
+            
+            _mesh.material.SetColor(IntersectionColor, altColor);
             _mesh.material.SetFloat(Enable, value);
         }
     }

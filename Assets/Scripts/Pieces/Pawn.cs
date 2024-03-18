@@ -7,11 +7,13 @@ namespace Pieces
     {
         public Pawn(Cell cell, GameObject prefab, Transform root, Side side) : base(cell, prefab, root, side) {}
 
-        public override List<Cell> GetAvailableMoves(Cell currentCell)
+        public override int HeuristicScore => 1;
+
+        public override List<Cell> AvailableMoves()
         {
             List<Cell> moves = new List<Cell>();
-            int currentColumn = currentCell.Coordinates.Columns;
-            int currentRow = currentCell.Coordinates.Row;
+            int currentColumn = this.Cell.Coordinates.Columns;
+            int currentRow = this.Cell.Coordinates.Row;
             int offset = (Side == Side.Light) ? 1 : -1;
             
             Cell forward = Matrix.GetCell(currentColumn, currentRow + offset);
@@ -30,7 +32,7 @@ namespace Pieces
             else
                 return moves;
             
-            if (forwardPush != null && !HasMoved && !forwardPush.IsOccupied)
+            if (forwardPush is { IsOccupied: false } && !HasMoved)
                 moves.Add(forwardPush);
             
             return moves;

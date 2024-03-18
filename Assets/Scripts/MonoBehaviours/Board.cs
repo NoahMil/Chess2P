@@ -44,10 +44,10 @@ namespace MonoBehaviours
 
         private void InitializePiecesPrefabs()
         {
-            Piece.prefabs = new Dictionary<string, GameObject>();
+            Piece.Prefabs = new Dictionary<string, GameObject>();
         
             foreach (GameObject prefab in _piecesPrefabs)
-                Piece.prefabs.Add(prefab.name, prefab);
+                Piece.Prefabs.Add(prefab.name, prefab);
         }
 
         public static void EnableCellsTargets(List<Cell> availableCells)
@@ -63,7 +63,7 @@ namespace MonoBehaviours
             foreach (Cell cell in availableCells)
             {
                 cell.Behaviour.IsTargetable(true);
-                cell.Behaviour.Highlight(true, CellBehaviour.defaultColor);
+                cell.Behaviour.Highlight(true);
             }
         }
 

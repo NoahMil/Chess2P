@@ -9,6 +9,7 @@ namespace MonoBehaviours
 
         private static readonly int FresnelColor = Shader.PropertyToID("_fresnelColor");
         private static readonly int EnableFresnel = Shader.PropertyToID("_enableFresnel");
+        private static readonly int FresnelAltColor = Shader.PropertyToID("_fresnelAltColor");
 
         private static Color _initialColor;
 
@@ -29,12 +30,9 @@ namespace MonoBehaviours
         {
             int value = Convert.ToInt32(enable);
 
-            Color errorColor = _initialColor;
-            errorColor.r = 255;
-            errorColor.g = 62;
-            errorColor.b = 0;
+            Color altColor = _mesh.material.GetColor(FresnelAltColor);
             
-            _mesh.material.SetColor(FresnelColor, errorColor);
+            _mesh.material.SetColor(FresnelColor, altColor);
             _mesh.material.SetFloat(EnableFresnel, value);
         }
     }

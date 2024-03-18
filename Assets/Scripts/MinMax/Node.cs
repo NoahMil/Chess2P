@@ -44,11 +44,12 @@ public class Node
     public List<Node> GetChilds()
     {
         List<Node> nodeList = new List<Node>();
-        
+
         foreach (Cell cell in _matrix)
         {
             if (cell == null) continue;
             if (cell.Occupant == null) continue;
+
             if (cell.Occupant.Side == _turn) continue;
             cell.Occupant.AvailableMoves()
             // Je dois récupérer le mouvement de chaque Occupant dont c'est le tour et créer un nouveau node basé sur

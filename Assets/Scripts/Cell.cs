@@ -9,6 +9,7 @@ public class Cell
     public Coordinates Coordinates { get; set; }
     public Piece Occupant { get; set; }
 
+    public string Name => Behaviour.name;
     public bool IsOccupied => Occupant != null;
 
     public Cell(GameObject prefab, Transform root, int column, int row)
@@ -18,5 +19,12 @@ public class Cell
 
         Behaviour = cell.GetComponent<CellBehaviour>();
         cell.name = (char)('A' + column) + (row + 1).ToString();
+    }
+
+    public Cell(Cell copy)
+    {
+        Coordinates = copy.Coordinates;
+        Behaviour = copy.Behaviour;
+        Occupant = copy.Occupant;
     }
 }
