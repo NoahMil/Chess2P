@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
+using Data;
+using Enums;
 
 namespace Pieces
 {
     public class Bishop : Piece
     {
-        public Bishop(Cell cell, GameObject prefab, Transform root, Side side) : base(cell, prefab, root, side) {}
-        
         public override int HeuristicScore => 3;
-        
+
+        public Bishop(Cell cell, Side side) : base(cell, side) {}
+
         public override List<Cell> AvailableMoves()
         {
             List<Cell> availableMoves = new List<Cell>();
-            int currentColumn = this.Cell.Coordinates.Columns;
+            int currentColumn = this.Cell.Coordinates.Column;
             int currentRow = this.Cell.Coordinates.Row;
             
             for (int column = currentColumn + 1, row = currentRow + 1; row < Matrix.BoardSize && column < Matrix.BoardSize; row++, column++) // Upward-right
