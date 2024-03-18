@@ -5,13 +5,17 @@ using UnityEngine;
 
 using Managers;
 using Data;
+using Data.Pieces;
 using Enums;
-using Pieces;
 
 namespace View
 {
     public class PieceBehaviour: MonoBehaviour
     {
+        public CellBehaviour Cell { get; set; }
+        public Coordinates Coordinates { get; set; }
+        public string Name => gameObject.name;
+        
         private MeshRenderer _mesh;
 
         private static readonly int FresnelColor = Shader.PropertyToID("_fresnelColor");
@@ -22,16 +26,18 @@ namespace View
 
         private void Awake()
         {
+            Vector3 position = transform.position;
+            Coordinates = new Coordinates(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.z));
             _mesh = GetComponent<MeshRenderer>();
             _initialColor = _mesh.material.GetColor(FresnelColor);
         }
 
-        public static PieceBehaviour Create(Cell cell, GameObject prefab, Transform root)
+        public static PieceBehaviour Create(Piece piece, GameObject prefab, Transform root)
         {
-            Side side = cell.Occupant.Side;
+            Side side = piece.Side;
             Quaternion rotation = side == Side.Light ? Quaternion.identity : Quaternion.Euler(0, -180, 0);
             
-            return Instantiate(prefab, cell.Coordinates.World, rotation, root).GetComponent<PieceBehaviour>();
+            return Instantiate(prefab, piece.Coordinates.World, rotation, root).GetComponent<PieceBehaviour>();
         }
 
         public static List<PieceBehaviour> InitBoard(Transform root)
@@ -41,20 +47,15 @@ namespace View
 
             for (int column = 0; column < Matrix.BoardSize; column++)
             {
-                Matrix.GetCell(column, 0).Occupant = Piece.Create("Light" + pieceOrder[column], Matrix.GetCell(column, 0));
-                Matrix.GetCell(column, 1).Occupant = Piece.Create("LightPawn", Matrix.GetCell(column, 1));
-                Matrix.GetCell(column, 7).Occupant = Piece.Create("Dark" + pieceOrder[column], Matrix.GetCell(column, 7));
-                Matrix.GetCell(column, 6).Occupant = Piece.Create("DarkPawn", Matrix.GetCell(column, 6));
+                Create(Matrix.GetPiece(column, 0), Board.Prefabs["Light" + pieceOrder[column]], root);
+                Create(Matrix.GetPiece(column, 1), Board.Prefabs["LightPawn"], root);
+                Create(Matrix.GetPiece(column, 7), Board.Prefabs["Dark" + pieceOrder[column]], root);
+                Create(Matrix.GetPiece(column, 6), Board.Prefabs["DarkPawn"], root);
 
-                GameManager.GetBehaviourCell(Matrix.GetCell(column, 0)).Occupant = Create(Matrix.GetCell(column, 0), Piece.Prefabs["Light" + pieceOrder[column]], root);
-                GameManager.GetBehaviourCell(Matrix.GetCell(column, 1)).Occupant = Create(Matrix.GetCell(column, 1), Piece.Prefabs["LightPawn"], root);
-                GameManager.GetBehaviourCell(Matrix.GetCell(column, 7)).Occupant = Create(Matrix.GetCell(column, 7), Piece.Prefabs["Dark" + pieceOrder[column]], root);
-                GameManager.GetBehaviourCell(Matrix.GetCell(column, 6)).Occupant = Create(Matrix.GetCell(column, 6), Piece.Prefabs["DarkPawn"], root);
-
-                pieceBehaviours.Add(GameManager.GetBehaviourCell(Matrix.GetCell(column, 0)).Occupant);
-                pieceBehaviours.Add(GameManager.GetBehaviourCell(Matrix.GetCell(column, 1)).Occupant);
-                pieceBehaviours.Add(GameManager.GetBehaviourCell(Matrix.GetCell(column, 7)).Occupant);
-                pieceBehaviours.Add(GameManager.GetBehaviourCell(Matrix.GetCell(column, 6)).Occupant);
+                pieceBehaviours.Add(GameManager.GetPieceBehaviour(Matrix.GetPiece(column, 0)));
+                pieceBehaviours.Add(GameManager.GetPieceBehaviour(Matrix.GetPiece(column, 1)));
+                pieceBehaviours.Add(GameManager.GetPieceBehaviour(Matrix.GetPiece(column, 7)));
+                pieceBehaviours.Add(GameManager.GetPieceBehaviour(Matrix.GetPiece(column, 6)));
             }
 
             return pieceBehaviours;

@@ -1,24 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using Enums;
+using System.Linq;
+
 using Managers;
-using UnityEngine.Assertions;
+using Enums;
+using Unity.VisualScripting;
 
 namespace Data
 {
     public static class Matrix
     {
         public const int BoardSize = 8;
-        private static readonly Cell[,] Grid = new Cell[BoardSize, BoardSize];
+        public static readonly Piece[,] Grid = new Piece[BoardSize, BoardSize];
 
         public static void Init()
         {
-            for (int column = 0; column < BoardSize; column++)
+            string[] pieceOrder = { "Rook", "Knight", "Bishop", "Queen", "King", "Bishop", "Knight", "Rook" };
+
+            for (int column = 0; column < Matrix.BoardSize; column++)
             {
-                for (int row = 0; row < BoardSize; row++)
-                {
-                    Grid[column, row] = new Cell(column, row);
-                }
+                Grid[column, 0] = Piece.Create("Light" + pieceOrder[column], new Coordinates(column, 0));
+                Grid[column, 1] = Piece.Create("LightPawn", new Coordinates(column, 1));
+                Grid[column, 7] = Piece.Create("Dark" + pieceOrder[column], new Coordinates(column, 7));
+                Grid[column, 6] = Piece.Create("DarkPawn", new Coordinates(column, 6));
             }
         }
 
@@ -27,7 +31,7 @@ namespace Data
         /// </summary>
         /// <param name="cellName">Cell's GameObject name</param>
         /// <returns></returns>
-        public static Cell GetCell(string cellName)
+        public static Piece GetPiece(string cellName)
         {
             char columnLetter = cellName[0];
             int row = int.Parse(cellName[1..]) - 1;
@@ -45,7 +49,7 @@ namespace Data
         /// <param name="column">Coordinates component between 0 and 7</param>
         /// <param name="row">Coordinates component between 0 and 7</param>
         /// <returns></returns>
-        public static Cell GetCell(int column, int row)
+        public static Piece GetPiece(int column, int row)
         {
             if (column is < 0 or > 7) return null;
             if (row is < 0 or > 7) return null;
@@ -60,7 +64,7 @@ namespace Data
         /// <param name="column">Coordinates component between 0 and 7</param>
         /// <param name="row">Coordinates component between 0 and 7</param>
         /// <returns></returns>
-        public static Cell GetCell(Cell[,] grid, int column, int row)
+        public static Piece GetPiece(Piece[,] grid, int column, int row)
         {
             if (column is < 0 or > 7) return null;
             if (row is < 0 or > 7) return null;
@@ -73,19 +77,19 @@ namespace Data
         /// <b>Notice:</b> Doesn't filter empty Cells
         /// </summary>
         /// <returns></returns>
-        public static List<Cell> GetAllCells()
+        public static List<Piece> GetAllPieces()
         {
-            List<Cell> allCells = new();
+            List<Piece> allPieces = new();
         
             for (int column = 0; column < BoardSize; column++)
             {
                 for (int row = 0; row < BoardSize; row++)
                 {
-                    allCells.Add(Grid[column, row]);
+                    allPieces.Add(Grid[column, row]);
                 }
             }
 
-            return allCells;
+            return allPieces;
         }
     
         /// <summary>
@@ -93,61 +97,61 @@ namespace Data
         /// <b>Notice:</b> Doesn't filter empty Cells
         /// </summary>
         /// <returns></returns>
-        public static List<Cell> GetAllCells(Cell[,] grid)
+        public static List<Piece> GetAllPieces(Piece[,] grid)
         {
-            List<Cell> allCells = new();
+            List<Piece> allPieces = new();
         
             for (int column = 0; column < BoardSize; column++)
             {
                 for (int row = 0; row < BoardSize; row++)
                 {
-                    allCells.Add(Grid[column, row]);
+                    allPieces.Add(Grid[column, row]);
                 }
             }
 
-            return allCells;
+            return allPieces;
         }
 
         /// <summary>
         /// Request all Cells from the original Grid and filters in Pieces from a specified "side".
         /// </summary>
         /// <returns></returns>
-        public static List<Cell> GetPieceCells(Side side)
+        public static List<Piece> GetPiecesFromSide(Side side)
         {
-            List<Cell> pieceCells = new();
+            List<Piece> pieces = new();
         
             for (int column = 0; column < BoardSize; column++)
             {
                 for (int row = 0; row < BoardSize; row++)
                 {
-                    Cell cell = Grid[column, row];
-                    if (cell.IsOccupied && cell.Occupant.Side == side)
-                        pieceCells.Add(cell);
+                    Piece piece = Grid[column, row];
+                    if (piece != null && piece.Side == side)
+                        pieces.Add(piece);
                 }
             }
 
-            return pieceCells;
+            return pieces;
         }
     
         /// <summary>
         /// Request all Cells from the specified "snapshot" grid and filter in Pieces from a specified "side".
         /// </summary>
         /// <returns></returns>
-        public static List<Cell> GetPieceCells(Cell[,] grid, Side side)
+        public static List<Piece> GetPiecesFromSide(Piece[,] grid, Side side)
         {
-            List<Cell> pieceCells = new();
+            List<Piece> pieces = new();
         
             for (int column = 0; column < BoardSize; column++)
             {
                 for (int row = 0; row < BoardSize; row++)
                 {
-                    Cell cell = grid[column, row];
-                    if (cell.IsOccupied && cell.Occupant.Side == side)
-                        pieceCells.Add(cell);
+                    Piece piece = grid[column, row];
+                    if (piece != null && piece.Side == side)
+                        pieces.Add(piece);
                 }
             }
 
-            return pieceCells;
+            return pieces;
         }
 
         /// <summary>
@@ -156,17 +160,17 @@ namespace Data
         /// <param name="side"></param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public static Cell GetKing(Side side)
+        public static Piece GetKing(Side side)
         {
-            Cell cell;
+            Piece piece;
         
             for (int column = 0; column < BoardSize; column++)
             {
                 for (int row = 0; row < BoardSize; row++)
                 {
-                    cell = Grid[column, row];
-                    if (cell.IsOccupied && cell.Occupant.IsTheKing && cell.Occupant.Side == side)
-                        return cell;
+                    piece = Grid[column, row];
+                    if (piece != null && piece.IsTheKing && piece.Side == side)
+                        return piece;
                 }
             }
 
@@ -180,55 +184,50 @@ namespace Data
         /// <param name="side"></param>
         /// <returns></returns>
         /// <exception cref="NullReferenceException"></exception>
-        public static Cell GetKing(Cell[,] grid, Side side)
+        public static Piece GetKing(Piece[,] grid, Side side)
         {
-            Cell cell;
+            List<Piece> piece = GetPiecesFromSide(grid, side);
 
-            if (grid is not { Length: BoardSize * BoardSize }) throw new ArgumentException("Grid snapshot is not valid at that point");
-        
-            for (int column = 0; column < BoardSize; column++)
+            try
             {
-                for (int row = 0; row < BoardSize; row++)
-                {
-                    cell = grid[column, row];
-                    if (cell.IsOccupied && cell.Occupant.IsTheKing && cell.Occupant.Side == side)
-                        return cell;
-                }
+                return piece.First(cell => cell is not null && cell.IsTheKing);
             }
-
-            throw new NullReferenceException($"Error: Unable to get the {side.ToString()} King. A piece may have bypassed all safeguard and took the King out");
+            catch (SystemException exception)
+            {
+                UnityEngine.Debug.LogError($"Error: Unable to get the {side.ToString()} King. A piece may have bypassed all safeguard and took the King out");
+                throw;
+            }
         }
 
-        public static List<Cell> GetMoves(Cell cell)
+        public static List<Piece> GetMoves(Piece piece)
         {
-            return cell.Occupant.AvailableMoves();
+            return piece.AvailableMoves(piece.Coordinates);
         }
 
-        public static Cell[,] GetCurrentGridSnapshot() // Deep Copy
+        public static Piece[,] GetCurrentGridSnapshot() // Deep Copy
         {
-            Cell[,] snapshot = new Cell[BoardSize, BoardSize];
+            Piece[,] snapshot = new Piece[BoardSize, BoardSize];
 
             for (int column = 0; column < BoardSize; column++)
             {
                 for (int row = 0; row < BoardSize; row++)
                 {
-                    snapshot[column, row] = new Cell(Grid[column, row]);
-                    if (!snapshot[column, row].Equals(Grid[column, row])) throw new Exception("Comparison fails: Cell duplication compromised copy from the source.");
+                    snapshot[column, row] = (Piece) Grid[column, row].Clone();
                 }
             }
 
             return snapshot;
         }
 
-        public static Cell[,] DuplicateSnapshot(Cell[,] snapshot)
+        public static Piece[,] DuplicateSnapshot(Piece[,] snapshot)
         {
-            Cell[,] duplicate = new Cell[BoardSize, BoardSize];
+            Piece[,] duplicate = new Piece[BoardSize, BoardSize];
 
             for (int row = 0; row < BoardSize; row++)
             {
                 for (int col = 0; col < BoardSize; col++)
                 {
-                    duplicate[row, col] = new Cell(snapshot[row, col]);
+                    duplicate[row, col] = (Piece) snapshot[row, col].Clone();
                 }
             }
 
@@ -241,7 +240,7 @@ namespace Data
             {
                 for (int row = 0; row < BoardSize; row++)
                 {
-                    GameManager.GetBehaviourCell(Grid[column, row]).IsTargetable(Grid[column, row].IsOccupied);
+                    GameManager.GetPieceBehaviour(Grid[column, row]).Cell.IsTargetable(!Grid[column, row].IsEmpty);
                 }
             }
         }
@@ -259,7 +258,7 @@ namespace Data
                 string rowCells = "";
                 for (int row = 0; row < BoardSize; row++)
                 {
-                    rowCells += GameManager.GetBehaviourCell(GetCell(column, row)).Name + " ";
+                    rowCells += GameManager.GetPieceBehaviour(GetPiece(column, row)).Name + " ";
                 }
                 
                 debug += rowCells + "\n";

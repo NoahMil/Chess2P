@@ -6,20 +6,24 @@ using UnityEngine;
 using Data;
 using Enums;
 using View;
-using Pieces;
+using IA;
 
 namespace Managers
 {
     public class GameManager : MonoBehaviour
     {
-        private static Cell _origin;
-        private static Cell _destination;
-        private static List<Cell> _moves;
+        private static Piece _origin;
+        private static Piece _destination;
+        private static List<Piece> _moves;
         private static bool _updateOnce;
 
-        private static List<Cell> _checkResponsibles = new ();
-        private static Dictionary<Piece, List<Cell>> _validCheckMoves = new ();
-
+        private static readonly List<Piece> CheckResponsibles = new ();
+        private static readonly Dictionary<Piece, List<Piece>> ValidCheckMoves = new ();
+        
+        // ---- NEW ---- //
+        private static readonly Dictionary<Piece, List<Piece>> ValidMoves = new();
+        // ------------ //
+        
         private bool _confirmEscape;
         private float _escapeTimer = 3f;
         public static Side CurrentPlayerTurn { get; private set; }
@@ -27,19 +31,36 @@ namespace Managers
         public static bool Checkmate { get; set; }
         public static bool Check { get; set; }
 
+        [ContextMenu("Think")]
+        public void Think()
+        {
+            Node node = new Node(Matrix.Grid, CurrentPlayerTurn);
+            
+            foreach (Piece piece in node.Grid)
+            {
+                if (piece == null) continue;
+                if (piece.Side != CurrentPlayerTurn) continue;
+                
+                foreach (Piece availableMove in piece.AvailableMoves(piece.Coordinates))
+                {
+                    
+                }
+            }
+        }
+        
         #region Data Link
 
-        public static Cell GetDataCell(CellBehaviour viewCell)
+        public static Piece GetDataPiece(PieceBehaviour viewPiece)
         {
-            return Matrix.GetCell(viewCell.Coordinates.Row, viewCell.Coordinates.Column);
+            return Matrix.GetPiece(viewPiece.Coordinates.Row, viewPiece.Coordinates.Column);
         }
 
-        public static CellBehaviour GetBehaviourCell(Cell dataCell)
+        public static PieceBehaviour GetPieceBehaviour(Piece dataPiece)
         {
-            if (dataCell == null)
+            if (dataPiece == null)
                 throw new Exception($"Unexistant Cell request in Grid");
                     
-            return Board.CellBehaviours.First(cell => cell.Coordinates.Equals(dataCell.Coordinates));
+            return Board.PieceBehaviours.First(piece => piece.Coordinates.Equals(dataPiece.Coordinates));
         }
 
         #endregion
@@ -89,27 +110,25 @@ namespace Managers
 
         #region Game Logic
 
-        #region Cell Selection
+        #region Piece/Cell Selection
 
-        public static void SelectCell(Cell cell)
+        public static void SelectPiece(Piece piece)
         {
             if (Check)
-                CheckSelection(cell);
+                CheckSelection(piece);
             else
-                RegularSelection(cell);
+                RegularSelection(piece);
         }
 
-        private static void CheckSelection(Cell cell)
+        private static void CheckSelection(Piece piece)
         {
             // If no piece have been selected, checks if the current selected is part of the Pieces of the valid moves Dictionnary
-            if (_origin == null && _validCheckMoves.ContainsKey(cell.Occupant))
-            {
-                SetOrigin(cell);
+            if (_origin == null && ValidCheckMoves.ContainsKey(piece)) {
+                SetOrigin(piece);
             }
             // If a piece have been selected to be played, verify if the destination matches one of the valid moves list from that Piece in the Dictionnary;
-            else if (_origin != null && _validCheckMoves[cell.Occupant].Contains(cell))
-            {
-                SetDestination(cell);
+            else if (_origin != null && ValidCheckMoves[piece].Contains(piece)) {
+                SetDestination(piece);
             } 
             else
             {
@@ -118,20 +137,20 @@ namespace Managers
             }
         }
 
-        private static void RegularSelection(Cell cell)
+        private static void RegularSelection(Piece piece)
         {
             if (_origin == null)
             {
-                SetOrigin(cell);
+                SetOrigin(piece);
             }
-            else if (_origin != null && IsDifferentPieceSelected(cell))
+            else if (_origin != null && IsDifferentPieceSelected(piece))
             {
                 Unselect();
-                SelectCell(cell); // Tail Recursion
+                SelectPiece(piece); // Tail Recursion
             }
             else
             {
-                SetDestination(cell);
+                SetDestination(piece);
             }
         }
 
@@ -139,40 +158,39 @@ namespace Managers
         {
             if (_origin == null) return;
                     
-            GetBehaviourCell(_origin).Occupant.Highlight(HighlightType.None);
+            GetPieceBehaviour(_origin).Highlight(HighlightType.None);
             _origin = null;
 
             if (_moves == null) return;
 
-            foreach (Cell cell in _moves)
-                GetBehaviourCell(cell).Highlight(HighlightType.None);
+            foreach (Piece piece in _moves)
+                GetPieceBehaviour(piece).Highlight(HighlightType.None);
             
             _moves = null;
         }
 
         #endregion
 
-        private static void ResolveMovement()
+       /* private static void ResolveMovement()
         {
-            GetBehaviourCell(_origin).Occupant.Highlight(HighlightType.None);
+            GetPieceBehaviour(_origin).Highlight(HighlightType.None);
                 
-            if (_destination is { IsOccupied: true } && _destination.Occupant.Side == OpponentTurn)
-                Destroy(GetBehaviourCell(_destination).Occupant.gameObject);
+            if (_destination is { IsEmpty: false } && _destination.Side == OpponentTurn)
+                Destroy(GetPieceBehaviour(_destination).gameObject);
 
-            _destination.Occupant = _origin.Occupant;
-            _destination.Occupant.Cell = _destination; // I need to update the Piece's internal reference to it's holding Cell. Since the AvailableMove works automously (without re-providing the cell as a paramater)
-            GetBehaviourCell(_destination).Occupant = GetBehaviourCell(_origin).Occupant; // Manually move the Behaviour cell's Occupant since the Data/View decoupling
-            _destination.Occupant.HasMoved = true;
+            Coordinates originCoords = _origin.Coordinates;
+            _destination = _origin;
+            _destination.HasMoved = true;
 
-            _origin.Occupant = null;
-            GetBehaviourCell(_origin).Occupant = null; // Manually drop the _origin Behaviour cell's Occupant to null too;
+            _origin.Clear();
+            GetPieceBehaviour(_origin).Occupant = null; // Manually drop the _origin Behaviour cell's Occupant to null too;
 
-            Debug.Log($"Played {_destination.GetType()} from {GetBehaviourCell(_origin).Name} to {GetBehaviourCell(_destination).Name}");
+            Debug.Log($"Played {_destination.GetType()} from {GetPieceBehaviour(_origin).Name} to {GetPieceBehaviour(_destination).Name}");
                 
             Board.UpdateView();
             HandleCheck();
             ChangeTurn();
-        }
+        } */
 
         private static void HandleCheck()
         {
@@ -181,7 +199,7 @@ namespace Managers
                 Check = true;
                 GatherValidMoves();
                 
-                if (_validCheckMoves.Count == 0) { // Chekmate;
+                if (ValidCheckMoves.Count == 0) { // Chekmate;
                     Debug.LogWarning("No moves can be made -> Checkmate");
                     return;
                 }
@@ -196,8 +214,8 @@ namespace Managers
             _destination = null;
             _origin = null;
 
-            foreach (Cell cell in _moves) // Reset Cells highlighting
-                GetBehaviourCell(cell).Highlight(HighlightType.None);
+            foreach (Piece piece in _moves) // Reset Cells highlighting
+                GetPieceBehaviour(piece).Highlight(HighlightType.None);
             _moves = null;
                 
             CurrentPlayerTurn = OpponentTurn;
@@ -207,28 +225,28 @@ namespace Managers
 
         #region Targets
 
-        private static void SetOrigin(Cell cell)
+        private static void SetOrigin(Piece piece)
         {
-            if (!cell.IsOccupied) return;
-            if (cell.Occupant.Side != CurrentPlayerTurn) {
+            if (piece.IsEmpty) return;
+            if (piece.Side != CurrentPlayerTurn) {
                 Debug.Log("You can't play an Opponent piece !");
                 return;
             }
                     
-            _origin = cell;
+            _origin = piece;
             _moves = Matrix.GetMoves(_origin);
 
-            GetBehaviourCell(_origin).Occupant.Highlight(_moves.Count > 0 ? HighlightType.Active : HighlightType.Error);
+            GetPieceBehaviour(_origin).Highlight(_moves.Count > 0 ? HighlightType.Active : HighlightType.Error);
 
             Board.EnableCellsTargets(_moves);
         }
 
-        private static void SetDestination(Cell cell)
+        private static void SetDestination(Piece piece)
         {
-            if (!_moves.Contains(cell)) return;
+            if (!_moves.Contains(piece)) return;
                     
-            _destination = cell;
-            ResolveMovement();
+            _destination = piece;
+            // ResolveMovement();
         }
 
         #endregion
@@ -241,34 +259,34 @@ namespace Managers
         /// <param name="grid">The original grid or the duplicate to check</param>
         /// <param name="sideToTest">Side of the player to verify</param>
         /// <returns></returns>
-        private static bool PlayerIsInCheck(Cell[,] grid, Side sideToTest)
+        private static bool PlayerIsInCheck(Piece[,] grid, Side sideToTest)
         {
-            Cell king = Matrix.GetKing(grid, sideToTest);
-            List<Cell> opponentPieces = Matrix.GetPieceCells(grid, sideToTest == Side.Light ? Side.Dark : Side.Light);
+            Piece king = Matrix.GetKing(grid, sideToTest);
+            List<Piece> opponentPieces = Matrix.GetPiecesFromSide(grid, sideToTest == Side.Light ? Side.Dark : Side.Light);
 
             ClearChecks();
 
-            foreach (Cell opponentCell in opponentPieces) // For each opponent pieces
+            foreach (Piece opponentCell in opponentPieces) // For each opponent pieces
             {
-                List<Cell> possibleMoves = opponentCell.Occupant.AvailableMoves();
+                List<Piece> possibleMoves = opponentCell.AvailableMoves(opponentCell.Coordinates);
 
-                foreach (Cell target in possibleMoves) // For each possibility
+                foreach (Piece target in possibleMoves) // For each possibility
                 {
-                    if (target.Occupant.Equals(king.Occupant)) // If one of them threaten the King
+                    if (target is { IsEmpty: false } && target.Equals(king)) // If one of them threaten the King
                     {
-                        Debug.Log($"{opponentCell.Occupant.Side} {opponentCell.Occupant.GetType().Name} make the {king.Occupant.Side} {king.Occupant.GetType().Name} in check, tracking down...");
-                        _checkResponsibles.Add(opponentCell); // Track the piece
+                        Debug.Log($"{opponentCell.Side} {opponentCell.GetType().Name} make the {king.Side} {king.GetType().Name} in check, tracking down...");
+                        CheckResponsibles.Add(opponentCell); // Track the piece
                         break;
                     }
                 }
 
-                if (_checkResponsibles.Count > 0) // If any opponent piece threaten the King
+                if (CheckResponsibles.Count > 0) // If any opponent piece threaten the King
                 {
-                    Debug.Log($"{_checkResponsibles.Count} threats have been detected towards {king.Occupant.Side} {king.Occupant.GetType().Name}");
-                    foreach (Cell responsible in _checkResponsibles) // For each King's threats
+                    Debug.Log($"{CheckResponsibles.Count} threats have been detected towards {king.Side} {king.GetType().Name}");
+                    foreach (Piece responsible in CheckResponsibles) // For each King's threats
                     {
-                        foreach (Cell cell in responsible.Occupant.AvailableMoves()) {
-                            GetBehaviourCell(cell).Highlight(HighlightType.Error); // Highlight the threat line(s) 
+                        foreach (Piece piece in responsible.AvailableMoves(responsible.Coordinates)) {
+                            GetPieceBehaviour(piece).Highlight(HighlightType.Error); // Highlight the threat line(s) 
                         }
                     }
 
@@ -281,23 +299,23 @@ namespace Managers
 
         private static void ClearChecks()
         {
-            foreach (Cell cell in _checkResponsibles)
+            foreach (Piece cell in CheckResponsibles)
             {
-                GetBehaviourCell(cell).Highlight(HighlightType.None);
+                GetPieceBehaviour(cell).Highlight(HighlightType.None);
             }
                 
-            _checkResponsibles.Clear();
+            CheckResponsibles.Clear();
         }
 
         private static void GatherValidMoves()
         {
-            Cell[,] snapshot = Matrix.GetCurrentGridSnapshot();
+            Piece[,] snapshot = Matrix.GetCurrentGridSnapshot();
 
-            foreach (Cell piece in snapshot) // For each piece from current player' side
+            foreach (Piece piece in snapshot) // For each piece from current player' side
             {
-                if (piece.Occupant == null || piece.Occupant.Side != CurrentPlayerTurn) continue;
+                if (piece.IsEmpty || piece.Side != CurrentPlayerTurn) continue;
                 
-                foreach (Cell move in piece.Occupant.AvailableMoves()) // For each moves this piece can achieve
+                foreach (Piece move in piece.AvailableMoves(piece.Coordinates)) // For each moves this piece can achieve
                 {
                     // Simulate a new grid (from the snapshot) by manually move the piece according to each of it's positions
                     VirtualResolve(snapshot, piece, move);
@@ -306,23 +324,21 @@ namespace Managers
             }
         }
 
-        private static void VirtualResolve(Cell[,] snapshot, Cell origin, Cell destination) // Resolve every possible movements from a snapshot
+        private static void VirtualResolve(Piece[,] snapshot, Piece origin, Piece destination) // Resolve every possible movements from a snapshot
         {
-            Cell[,] virtualGrid = Matrix.DuplicateSnapshot(snapshot); // Preserve state for each piece' simulation
-            Cell virtualOrigin = virtualGrid[origin.Coordinates.Row, origin.Coordinates.Column];
-            Cell virtualDestination = virtualGrid[destination.Coordinates.Row, destination.Coordinates.Column];
+            Piece[,] virtualGrid = Matrix.DuplicateSnapshot(snapshot); // Preserve state for each piece' simulation
+            Piece virtualOrigin = virtualGrid[origin.Coordinates.Row, origin.Coordinates.Column];
+            Piece virtualDestination = virtualGrid[destination.Coordinates.Row, destination.Coordinates.Column];
                 
-            virtualDestination.Occupant = virtualOrigin.Occupant;
-            virtualDestination.Occupant.Cell = virtualDestination;
-            virtualDestination.Occupant.HasMoved = true;
-            virtualOrigin.Occupant = null;
+            virtualDestination = virtualOrigin;
+            virtualOrigin = null;
 
             if (!PlayerIsInCheck(virtualGrid, OpponentTurn))
             {
-                if (_validCheckMoves.ContainsKey(virtualDestination.Occupant))
-                    _validCheckMoves[virtualDestination.Occupant].Add(virtualDestination);
+                if (ValidCheckMoves.TryGetValue(virtualDestination, out List<Piece> move))
+                    move.Add(virtualDestination);
                 else
-                    _validCheckMoves.Add(virtualDestination.Occupant, new List<Cell> { virtualDestination });
+                    ValidCheckMoves.Add(virtualDestination, new List<Piece> { virtualDestination });
             }
         }
 
@@ -330,12 +346,12 @@ namespace Managers
 
         #region Utils
 
-        private static bool IsDifferentPieceSelected(Cell cell) {
-            return cell.IsOccupied && cell.Occupant.Side == CurrentPlayerTurn;
+        private static bool IsDifferentPieceSelected(Piece piece) {
+            return piece.IsEmpty || piece.Side == CurrentPlayerTurn;
         }
 
         public static void ShowNoMovesAvailable() {
-            GetBehaviourCell(_origin).Occupant.Highlight(HighlightType.Error);
+            GetPieceBehaviour(_origin).Highlight(HighlightType.Error);
         }
 
         #endregion

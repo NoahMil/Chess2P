@@ -1,18 +1,26 @@
 ﻿using System.Collections.Generic;
-using Data;
 using Enums;
 
-namespace Pieces
+namespace Data.Pieces
 {
     public class Queen : Piece
     {
-        public Queen(Cell cell, Side side) : base(cell, side) {}
-
-        public override List<Cell> AvailableMoves()
+        public Queen(Side side, Coordinates coords) : base(side, coords) {}
+        
+        public override float Heuristic
         {
-            List<Cell> availableMoves = new List<Cell>();
-            int currentColumn = this.Cell.Coordinates.Column;
-            int currentRow = this.Cell.Coordinates.Row;
+            get
+            {
+                float baseValue = 8.80f;
+                return baseValue;
+            }
+        }
+
+        public override List<Piece> AvailableMoves(Coordinates coordinates)
+        {
+            List<Piece> availableMoves = new List<Piece>();
+            int currentColumn = coordinates.Column;
+            int currentRow = coordinates.Row;
             
             GetAlignedCells(availableMoves, currentColumn, currentRow);
             GetDiagonalCells(availableMoves, currentColumn, currentRow);
@@ -20,63 +28,63 @@ namespace Pieces
             return availableMoves;
         }
         
-        private void GetDiagonalCells(ICollection<Cell> availableMoves, int currentColumn, int currentRow)
+        private void GetDiagonalCells(ICollection<Piece> availableMoves, int currentColumn, int currentRow)
         {
             for (int column = currentColumn + 1, row = currentRow + 1; row < Matrix.BoardSize && column < Matrix.BoardSize; row++, column++) // Upward-right
             {
-                Cell cell = Matrix.GetCell(column, row);
-                if (!ValidateCell(availableMoves, cell))
+                Piece piece = Matrix.GetPiece(column, row);
+                if (!ValidateCell(availableMoves, piece))
                     break;
             }
             
             for (int column = currentColumn - 1, row = currentRow + 1; row < Matrix.BoardSize && column >= 0; row++, column--) // Upward-left
             {
-                Cell cell = Matrix.GetCell(column, row);
-                if (!ValidateCell(availableMoves, cell))
+                Piece piece = Matrix.GetPiece(column, row);
+                if (!ValidateCell(availableMoves, piece))
                     break;
             }
 
             for (int column = currentColumn + 1, row = currentRow - 1; row >= 0 && column < Matrix.BoardSize; row--, column++) // Downward-right
             {
-                Cell cell = Matrix.GetCell(column, row);
-                if (!ValidateCell(availableMoves, cell))
+                Piece piece = Matrix.GetPiece(column, row);
+                if (!ValidateCell(availableMoves, piece))
                     break;
             }
 
             for (int column = currentColumn - 1, row = currentRow - 1; row >= 0 && column >= 0; row--, column--) // Downward-left
             {
-                Cell cell = Matrix.GetCell(column, row);
-                if (!ValidateCell(availableMoves, cell))
+                Piece piece = Matrix.GetPiece(column, row);
+                if (!ValidateCell(availableMoves, piece))
                     break;
             }
         }
         
-        private void GetAlignedCells(ICollection<Cell> availableMoves, int currentColumn, int currentRow)
+        private void GetAlignedCells(ICollection<Piece> availableMoves, int currentColumn, int currentRow)
         {
             for (int i = currentRow + 1; i < Matrix.BoardSize; i++) // Upward
             {
-                Cell upwardCell = Matrix.GetCell(currentColumn, i);
+                Piece upwardCell = Matrix.GetPiece(currentColumn, i);
                 if (!ValidateCell(availableMoves, upwardCell))
                     break;
             }
             
             for (int i = currentRow - 1; i >= 0; i--) // Downward
             {
-                Cell downwardCell = Matrix.GetCell(currentColumn, i);
+                Piece downwardCell = Matrix.GetPiece(currentColumn, i);
                 if (!ValidateCell(availableMoves, downwardCell))
                     break;
             }
             
             for (int i = currentColumn + 1; i < Matrix.BoardSize; i++) // Rightward
             {
-                Cell rightwardCell = Matrix.GetCell(i, currentRow);
+                Piece rightwardCell = Matrix.GetPiece(i, currentRow);
                 if (!ValidateCell(availableMoves, rightwardCell))
                     break;
             }
 
             for (int i = currentColumn - 1; i >= 0; i--) // Leftward
             {
-                Cell leftwardCell = Matrix.GetCell(i, currentRow);
+                Piece leftwardCell = Matrix.GetPiece(i, currentRow);
                 if (!ValidateCell(availableMoves, leftwardCell))
                     break;
             }

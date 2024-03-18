@@ -11,9 +11,6 @@ namespace View
 {
     public class CellBehaviour: MonoBehaviour
     {
-        public Coordinates Coordinates { get; set; }
-        public PieceBehaviour Occupant { get; set; }
-
         public string Name => gameObject.name;
 
         private MeshRenderer _mesh;
@@ -27,9 +24,6 @@ namespace View
 
         private void Awake()
         {
-            Vector3 position = transform.position;
-            Coordinates = new Coordinates(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.z));
-            
             _mesh = GetComponent<MeshRenderer>();
             _collider = GetComponent<Collider>();
             _initialColor = _mesh.material.GetColor(IntersectionColor);
@@ -37,7 +31,7 @@ namespace View
 
         private void OnMouseDown()
         {
-            GameManager.SelectCell(Matrix.GetCell(gameObject.name));
+            GameManager.SelectPiece(Matrix.GetPiece(gameObject.name));
         }
         
         public static List<CellBehaviour> InitBoard(GameObject prefab, Transform root)
@@ -48,7 +42,7 @@ namespace View
             {
                 for (int column = 0; column < Matrix.BoardSize; column++)
                 {
-                    GameObject cell = Instantiate(prefab, Matrix.GetCell(column, row).Coordinates.World, Quaternion.identity, root);
+                    GameObject cell = Instantiate(prefab, Matrix.GetPiece(column, row).Coordinates.World, Quaternion.identity, root);
                     cell.name = (char)('A' + column) + (row + 1).ToString();
                     cellBehaviours.Add(cell.GetComponent<CellBehaviour>());
                 }

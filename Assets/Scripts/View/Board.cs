@@ -5,7 +5,6 @@ using UnityEngine;
 using Managers;
 using Data;
 using Enums;
-using Pieces;
 
 namespace View
 {
@@ -16,6 +15,7 @@ namespace View
         [SerializeField] private GameObject _cellPrefab;
         [SerializeField] private List<GameObject> _piecesPrefabs;
 
+        public static Dictionary<string, GameObject> Prefabs;
         public static List<CellBehaviour> CellBehaviours;
         public static List<PieceBehaviour> PieceBehaviours;
 
@@ -36,15 +36,15 @@ namespace View
 
         private void InitializePiecesPrefabs()
         {
-            Piece.Prefabs = new Dictionary<string, GameObject>();
+            Prefabs = new Dictionary<string, GameObject>();
         
             foreach (GameObject prefab in _piecesPrefabs)
-                Piece.Prefabs.Add(prefab.name, prefab);
+                Prefabs.Add(prefab.name, prefab);
         }
 
         #region View
 
-        public static void EnableCellsTargets(List<Cell> availableCells)
+        public static void EnableCellsTargets(List<Piece> availableCells)
         {
             if (availableCells == null) throw new NullReferenceException("Error: availableCells list isn't initialized, is there a probleme with <GetAvailableMoves> ?");
 
@@ -54,10 +54,10 @@ namespace View
                 return;
             }
 
-            foreach (Cell cell in availableCells)
+            foreach (Piece piece in availableCells)
             {
-                GameManager.GetBehaviourCell(cell).IsTargetable(true);
-                GameManager.GetBehaviourCell(cell).Highlight(HighlightType.Active);
+                GameManager.GetPieceBehaviour(piece).Cell.IsTargetable(true);
+                GameManager.GetPieceBehaviour(piece).Cell.Highlight(HighlightType.Active);
             }
         }
 
@@ -68,12 +68,12 @@ namespace View
     
         public static void UpdateView()
         {
-            List<Cell> cells = Matrix.GetAllCells();
+            List<Piece> pieces = Matrix.GetAllPieces();
         
-            foreach (Cell cell in cells)
+            foreach (Piece cell in pieces)
             {
-                if (cell.IsOccupied)
-                    GameManager.GetBehaviourCell(cell).Occupant.transform.position = cell.Coordinates.World;
+                if (!cell.IsEmpty)
+                    GameManager.GetPieceBehaviour(cell).Cell.transform.position = cell.Coordinates.World;
             }
         }
 

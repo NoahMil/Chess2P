@@ -1,43 +1,51 @@
 ﻿using System.Collections.Generic;
-using Data;
 using Enums;
 
-namespace Pieces
+namespace Data.Pieces
 {
     public class Rook : Piece
     {
-        public Rook(Cell cell, Side side) : base(cell, side) {}
-
-        public override List<Cell> AvailableMoves()
+        public Rook(Side side, Coordinates coords) : base(side, coords) {}
+        
+        public override float Heuristic
         {
-            List<Cell> availableMoves = new List<Cell>();
-            int currentColumn = this.Cell.Coordinates.Column;
-            int currentRow = this.Cell.Coordinates.Row;
+            get
+            {
+                float baseValue = 5.10f;
+                return baseValue;
+            }
+        }
+
+        public override List<Piece> AvailableMoves(Coordinates coordinates)
+        {
+            List<Piece> availableMoves = new List<Piece>();
+            int currentColumn = coordinates.Column;
+            int currentRow = coordinates.Row;
 
             for (int row = currentRow + 1; row < Matrix.BoardSize; row++) // Upward
             {
-                Cell upwardCell = Matrix.GetCell(currentColumn, row);
+                Piece upwardCell = Matrix.GetPiece(currentColumn, row);
                 if (!ValidateCell(availableMoves, upwardCell))
                     break;
             }
             
             for (int row = currentRow - 1; row >= 0; row--) // Downward
             {
-                Cell downwardCell = Matrix.GetCell(currentColumn, row);
+                Piece downwardCell = Matrix.GetPiece(currentColumn, row);
                 if (!ValidateCell(availableMoves, downwardCell))
                     break;
             }
             
             for (int column = currentColumn + 1; column < Matrix.BoardSize; column++) // Rightward
             {
-                Cell rightwardCell = Matrix.GetCell(column, currentRow);
+                Piece rightwardCell = Matrix.GetPiece(column, currentRow);
                 if (!ValidateCell(availableMoves, rightwardCell))
                     break;
             }
 
             for (int column = currentColumn - 1; column >= 0; column--) // Leftward
             {
-                Cell leftwardCell = Matrix.GetCell(column, currentRow);
+                Piece leftwardCell = Matrix.GetPiece(column, currentRow);
                 if (!ValidateCell(availableMoves, leftwardCell))
                     break;
             }
