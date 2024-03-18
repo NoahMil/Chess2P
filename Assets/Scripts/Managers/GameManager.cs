@@ -250,7 +250,7 @@ namespace Managers
 
             foreach (Cell opponentCell in opponentPieces) // For each opponent pieces
             {
-                List<Cell> possibleMoves = opponentCell.Occupant.AvailableMoves();
+                List<Cell> possibleMoves = opponentCell.Occupant.AvailableMoves(opponentCell.Coordinates);
 
                 foreach (Cell target in possibleMoves) // For each possibility
                 {
@@ -267,7 +267,7 @@ namespace Managers
                     Debug.Log($"{_checkResponsibles.Count} threats have been detected towards {king.Occupant.Side} {king.Occupant.GetType().Name}");
                     foreach (Cell responsible in _checkResponsibles) // For each King's threats
                     {
-                        foreach (Cell cell in responsible.Occupant.AvailableMoves()) {
+                        foreach (Cell cell in responsible.Occupant.AvailableMoves(responsible.Coordinates)) {
                             GetBehaviourCell(cell).Highlight(HighlightType.Error); // Highlight the threat line(s) 
                         }
                     }
@@ -277,6 +277,17 @@ namespace Managers
             }
 
             return false;
+        }
+
+        private static void VerifyIfMoveIsValidForCheck(Cell[,] snapshot, Cell destination)
+        {
+            if (!PlayerIsInCheck(snapshot, OpponentTurn)) // Verify if move does resolve any check
+            {
+                if (_validCheckMoves.ContainsKey(destination.Occupant))
+                    _validCheckMoves[destination.Occupant].Add(destination);
+                else
+                    _validCheckMoves.Add(destination.Occupant, new List<Cell> { destination });
+            }
         }
 
         private static void ClearChecks()
@@ -297,7 +308,7 @@ namespace Managers
             {
                 if (piece.Occupant == null || piece.Occupant.Side != CurrentPlayerTurn) continue;
                 
-                foreach (Cell move in piece.Occupant.AvailableMoves()) // For each moves this piece can achieve
+                foreach (Cell move in piece.Occupant.AvailableMoves(piece.Coordinates)) // For each moves this piece can achieve
                 {
                     // Simulate a new grid (from the snapshot) by manually move the piece according to each of it's positions
                     VirtualResolve(snapshot, piece, move);
@@ -307,24 +318,15 @@ namespace Managers
         }
 
 
-        private static void VirtualResolve(Cell[,] snapshot, Cell origin, Cell destination) // Resolve every possible movements from a snapshot
+        public static void VirtualResolve(Cell[,] snapshot, Cell origin, Cell destination) // Resolve every possible movements from a snapshot
         {
-            Cell[,] virtualGrid = Matrix.DuplicateSnapshot(snapshot); // Preserve state for each piece' simulation
-            Cell virtualOrigin = virtualGrid[origin.Coordinates.Row, origin.Coordinates.Column];
-            Cell virtualDestination = virtualGrid[destination.Coordinates.Row, destination.Coordinates.Column];
-                
+            Cell virtualOrigin = snapshot[origin.Coordinates.Row, origin.Coordinates.Column];
+            Cell virtualDestination = snapshot[destination.Coordinates.Row, destination.Coordinates.Column];
+            
             virtualDestination.Occupant = virtualOrigin.Occupant;
             virtualDestination.Occupant.Cell = virtualDestination;
             virtualDestination.Occupant.HasMoved = true;
             virtualOrigin.Occupant = null;
-
-            if (!PlayerIsInCheck(virtualGrid, OpponentTurn))
-            {
-                if (_validCheckMoves.ContainsKey(virtualDestination.Occupant))
-                    _validCheckMoves[virtualDestination.Occupant].Add(virtualDestination);
-                else
-                    _validCheckMoves.Add(virtualDestination.Occupant, new List<Cell> { virtualDestination });
-            }
         }
 
         #endregion

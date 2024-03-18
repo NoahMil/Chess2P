@@ -1,9 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
+
+using Data;
+using Enums;
 using Managers;
-using MinMax;
-using MonoBehaviours;
-using UnityEngine;
 
 public class Node
 {
@@ -49,22 +48,30 @@ public class Node
         {
             if (cell == null) continue;
             if (cell.Occupant == null) continue;
-
             if (cell.Occupant.Side == _turn) continue;
-            cell.Occupant.AvailableMoves()
+            
             // Je dois récupérer le mouvement de chaque Occupant dont c'est le tour et créer un nouveau node basé sur
             // celui du node actuelle et jouer le coup sur celui ci
             // 1 - Récupérer la liste des muvement possible pour cette matrice
-            // 2 - Copier la matrice actuel
-            // 3 - Jouer le mouvement sur la matrice actuel
-            // 4 - Créer un Node contenant tout les information nécessaire (la nouvelle matrice, les sides)
-            // 5 - Ajouter le node a la liste des enfants à retourner
-            
-            Side nextTurn = _turn == Side.Light ? Side.Dark : Side.Light;
-            Node childNode = new Node(_owner, )
-            nodeList.Add(childNode);
-        }
+            List<Cell> moves = cell.Occupant.AvailableMoves(cell.Coordinates);
 
+            foreach (Cell move in moves)
+            {
+                // 2 - Copier la matrice actuel
+                Cell[,] newMatrix = Matrix.DuplicateSnapshot(_matrix);
+                
+                // 3 - Jouer le mouvement sur la matrice actuel
+                GameManager.VirtualResolve(newMatrix, cell, move);
+                
+                // 4 - Créer un Node contenant tout les information nécessaire (la nouvelle matrice, les sides)
+                Side nextTurn = _turn == Side.Light ? Side.Dark : Side.Light;
+                Node childNode = new Node(_owner, nextTurn, newMatrix);
+
+                // 5 - Ajouter le node a la liste des enfants à retourner
+                nodeList.Add(childNode);
+            }
+        }
         return nodeList;
     }
+    
 }

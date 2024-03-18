@@ -201,7 +201,7 @@ namespace Data
 
         public static List<Cell> GetMoves(Cell cell)
         {
-            return cell.Occupant.AvailableMoves();
+            return cell.Occupant.AvailableMoves(cell.Coordinates);
         }
 
         public static Cell[,] GetCurrentGridSnapshot() // Deep Copy

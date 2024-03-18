@@ -47,7 +47,7 @@ namespace Pieces
             };
         }
         
-        public abstract List<Cell> AvailableMoves();
+        public abstract List<Cell> AvailableMoves(Coordinates cellCoordinates);
         
         protected virtual bool ValidateCell(ICollection<Cell> availableMoves, Cell cell)
         {

@@ -10,7 +10,7 @@ namespace Pieces
 
         public override int HeuristicScore => 1;
 
-        public override List<Cell> AvailableMoves()
+        public override List<Cell> AvailableMoves(Coordinates cellCoordinates)
         {
             List<Cell> moves = new List<Cell>();
             int currentColumn = this.Cell.Coordinates.Column;

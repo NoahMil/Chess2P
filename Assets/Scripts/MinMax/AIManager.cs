@@ -1,16 +1,25 @@
-using Managers;
+using System;
 using UnityEngine;
+
+using Data;
+using Managers;
 
 namespace MinMax
 {
     public class AIManager : MonoBehaviour
     {
+        private int _maxEval;
+        
         [ContextMenu("Think")]
         public void Think()
         {
-            Node firstNode = new Node(GameManager.CurrentPlayerTurn, GameManager.CurrentPlayerTurn,
-                Matrix.GetCurrentGridSnapshot());
-            MinMax(firstNode, 2, true);
+            Node firstNode = new Node(GameManager.CurrentPlayerTurn, GameManager.CurrentPlayerTurn, Matrix.GetCurrentGridSnapshot());
+            _maxEval = MinMax(firstNode, 2, true);
+
+            foreach (Node node in firstNode.GetChilds())
+            {
+                
+            }
         }
 
         public int MinMax(Node node, int depth, bool maximizingPlayer)
@@ -40,6 +49,11 @@ namespace MinMax
 
                 return minEval;
             }
+        }
+
+        private void Update()
+        {
+            Debug.Log(_maxEval);
         }
     }
 }
