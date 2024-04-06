@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Managers;
 using Enums;
-using Unity.VisualScripting;
+using View;
 
 namespace Data
 {
@@ -26,25 +25,15 @@ namespace Data
             }
         }
 
-        /// <summary>
-        /// Request a unique Cell from the original Grid array by supplying it's name
-        /// </summary>
-        /// <param name="cellName">Cell's GameObject name</param>
-        /// <returns></returns>
-        public static Piece GetPiece(string cellName)
+        #region GetPiece()
+
+        public static Piece GetPiece(Coordinates coordinates)
         {
-            char columnLetter = cellName[0];
-            int row = int.Parse(cellName[1..]) - 1;
-            int column = columnLetter - 'A';
-
-            if (column is < 0 or > 7) return null;
-            if (row is < 0 or > 7) return null;
-
-            return Grid[column, row];
+            return GetPiece(coordinates.Column, coordinates.Row);
         }
     
         /// <summary>
-        /// Request a unique Cell from the original Grid array tied to the chess board
+        /// Request a unique Piece from the original Grid array tied to the chess board
         /// </summary>
         /// <param name="column">Coordinates component between 0 and 7</param>
         /// <param name="row">Coordinates component between 0 and 7</param>
@@ -58,7 +47,7 @@ namespace Data
         }
 
         /// <summary>
-        /// Request a unique Cell from the supplied "snapshot" matrix
+        /// Request a unique Piece from the supplied "snapshot" matrix
         /// </summary>
         /// <param name="grid">The grid to request</param>
         /// <param name="column">Coordinates component between 0 and 7</param>
@@ -72,9 +61,13 @@ namespace Data
             return grid[column, row];
         }
 
+        #endregion
+
+        #region GetAllPieces()
+
         /// <summary>
-        /// Return all Cells objects from the original Grid as a continous list.<br/>
-        /// <b>Notice:</b> Doesn't filter empty Cells
+        /// Return all Pieces objects from the original Grid as a continous list.<br/>
+        /// <b>Notice:</b> Doesn't filter empty Pieces
         /// </summary>
         /// <returns></returns>
         public static List<Piece> GetAllPieces()
@@ -93,8 +86,8 @@ namespace Data
         }
     
         /// <summary>
-        /// Return all Cells objects from the "snapshot" grid as a continous list.<br/>
-        /// <b>Notice:</b> Doesn't filter empty Cells
+        /// Return all Pieces objects from the "snapshot" grid as a continous list.<br/>
+        /// <b>Notice:</b> Doesn't filter empty Pieces
         /// </summary>
         /// <returns></returns>
         public static List<Piece> GetAllPieces(Piece[,] grid)
@@ -111,12 +104,12 @@ namespace Data
 
             return allPieces;
         }
-
+        
         /// <summary>
-        /// Request all Cells from the original Grid and filters in Pieces from a specified "side".
+        /// Request all Pieces from the original Grid and filters in Pieces from a specified "side".
         /// </summary>
         /// <returns></returns>
-        public static List<Piece> GetPiecesFromSide(Side side)
+        public static List<Piece> GetAllPieces(Side side)
         {
             List<Piece> pieces = new();
         
@@ -134,10 +127,10 @@ namespace Data
         }
     
         /// <summary>
-        /// Request all Cells from the specified "snapshot" grid and filter in Pieces from a specified "side".
+        /// Request all Pieces from the specified "snapshot" grid and filter in Pieces from a specified "side".
         /// </summary>
         /// <returns></returns>
-        public static List<Piece> GetPiecesFromSide(Piece[,] grid, Side side)
+        public static List<Piece> GetAllPieces(Piece[,] grid, Side side)
         {
             List<Piece> pieces = new();
         
@@ -154,6 +147,11 @@ namespace Data
             return pieces;
         }
 
+
+        #endregion
+
+        #region GetKing()
+
         /// <summary>
         /// Utitlity method to request only the King from the supplied "side" inside the original Grid 
         /// </summary>
@@ -169,7 +167,7 @@ namespace Data
                 for (int row = 0; row < BoardSize; row++)
                 {
                     piece = Grid[column, row];
-                    if (piece != null && piece.IsTheKing && piece.Side == side)
+                    if (piece is { IsTheKing: true } && piece.Side == side)
                         return piece;
                 }
             }
@@ -186,18 +184,20 @@ namespace Data
         /// <exception cref="NullReferenceException"></exception>
         public static Piece GetKing(Piece[,] grid, Side side)
         {
-            List<Piece> piece = GetPiecesFromSide(grid, side);
+            List<Piece> pieces = GetAllPieces(grid, side);
 
             try
             {
-                return piece.First(cell => cell is not null && cell.IsTheKing);
+                return pieces.First(piece => piece is not null && piece.IsTheKing);
             }
-            catch (SystemException exception)
+            catch
             {
                 UnityEngine.Debug.LogError($"Error: Unable to get the {side.ToString()} King. A piece may have bypassed all safeguard and took the King out");
                 throw;
             }
         }
+
+        #endregion
 
         public static List<Piece> GetMoves(Piece piece)
         {
@@ -233,18 +233,7 @@ namespace Data
 
             return duplicate;
         }
-    
-        public static void ResetCellsTargetState()
-        {
-            for (int column = 0; column < BoardSize; column++)
-            {
-                for (int row = 0; row < BoardSize; row++)
-                {
-                    GameManager.GetPieceBehaviour(Grid[column, row]).Cell.IsTargetable(!Grid[column, row].IsEmpty);
-                }
-            }
-        }
-
+        
         #region Debug
 
         /// <summary>
@@ -255,13 +244,13 @@ namespace Data
             string debug = "Debug Matrix :\n\n";
             for (int column = 0; column < BoardSize; column++)
             {
-                string rowCells = "";
+                string rowPieces = "";
                 for (int row = 0; row < BoardSize; row++)
                 {
-                    rowCells += GameManager.GetPieceBehaviour(GetPiece(column, row)).Name + " ";
+                    rowPieces += Board.GetUnitBehaviour(GetPiece(column, row).Coordinates).name + " ";
                 }
                 
-                debug += rowCells + "\n";
+                debug += rowPieces + "\n";
             }
             UnityEngine.Debug.Log(debug);
         }

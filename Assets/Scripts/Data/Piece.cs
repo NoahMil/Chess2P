@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Managers;
 using Enums;
 using Data.Pieces;
 
@@ -12,11 +11,11 @@ namespace Data
         public Coordinates Coordinates { get; set; }
         public Side Side { get; set; }
         public bool HasMoved { get; set; }
-        public string Name => GameManager.GetPieceBehaviour(this).Name;
 
         public abstract float Heuristic { get; }
 
         public bool IsEmpty => Side == Side.Empty;
+        public string Type => this.GetType().Name;
         public bool IsTheKing => this.GetType() == typeof(King) || !IsEmpty;
         public bool IsNotTheKing => this.GetType() != typeof(King) || !IsEmpty;
         
@@ -100,12 +99,5 @@ namespace Data
         }
 
         #endregion
-
-        public void Clear(Coordinates newCoords)
-        {
-            Coordinates = newCoords;
-            Side = Side.Empty;
-            HasMoved = false;
-        }
     }
 }

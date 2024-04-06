@@ -44,7 +44,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4832448785682019789}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: daf6f182a69142a7b8adda0a3018c815, type: 3}
+  m_Script: {fileID: 11500000, guid: f2171794fc7f44cc897ba576e6bce061, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!65 &1048796636556029289
@@ -64,7 +64,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1, y: 0.05, z: 1}
   m_Center: {x: 0, y: 0.024, z: 0}

@@ -1,61 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using UnityEngine;
 
-using Managers;
-using Data;
 using Enums;
 
 namespace View
 {
     public class CellBehaviour: MonoBehaviour
     {
-        public string Name => gameObject.name;
-
+        private Unit _parent;
+        
         private MeshRenderer _mesh;
         private Collider _collider;
         
         private static readonly int Enable = Shader.PropertyToID("_Enable");
         private static readonly int IntersectionColor = Shader.PropertyToID("_IntersectionColor");
         private static readonly int IntersectionColorAlt = Shader.PropertyToID("_IntersectionColorAlt");
-        
-        private static Color _initialColor;
+        private Color _initialColor;
+
+        public bool IsTargetable {
+            get => _collider.enabled;
+            set => _collider.enabled = value;
+        }
 
         private void Awake()
         {
+            _parent = transform.parent.GetComponent<Unit>();
             _mesh = GetComponent<MeshRenderer>();
             _collider = GetComponent<Collider>();
             _initialColor = _mesh.material.GetColor(IntersectionColor);
-        }
 
-        private void OnMouseDown()
-        {
-            GameManager.SelectPiece(Matrix.GetPiece(gameObject.name));
         }
         
-        public static List<CellBehaviour> InitBoard(GameObject prefab, Transform root)
-        {
-            List<CellBehaviour> cellBehaviours = new ();
-            
-            for (int row = 0; row < Matrix.BoardSize; row++)
-            {
-                for (int column = 0; column < Matrix.BoardSize; column++)
-                {
-                    GameObject cell = Instantiate(prefab, Matrix.GetPiece(column, row).Coordinates.World, Quaternion.identity, root);
-                    cell.name = (char)('A' + column) + (row + 1).ToString();
-                    cellBehaviours.Add(cell.GetComponent<CellBehaviour>());
-                }
-            }
-
-            return cellBehaviours;
-        }
-
-        public void IsTargetable(bool enable)
-        {
-            _collider.enabled = enable;
-        }
-
+        #region Fluff
+        
         public void Highlight(HighlightType type)
         {
             switch (type)
@@ -73,8 +50,23 @@ namespace View
                     _mesh.material.SetFloat(Enable, 1);
                     break;
                 default:
-                    throw new InvalidEnumArgumentException($"Invalid {type.ToString()} supplied for piece highlighting");
+                    throw new InvalidEnumArgumentException($"Invalid {type.ToString()} supplied for ${_parent.name}'s cell highlighting");
             }
         }
+        
+        #endregion
+
+        #region Static
+
+        public static CellBehaviour Create(Unit parentObject, GameObject prefab)
+        {
+            GameObject cell = Instantiate(prefab, parentObject.Coordinates.World, Quaternion.identity, parentObject.transform);
+            
+            cell.name = "Cell";
+            
+            return cell.GetComponent<CellBehaviour>();
+        }
+
+        #endregion
     }
 }

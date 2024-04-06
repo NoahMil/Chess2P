@@ -1,11 +1,11 @@
-using Data;
-using Enums;
+﻿using UnityEngine;
 using TMPro;
-using UnityEngine;
+
+using Enums;
 
 namespace Managers
 {
-    public class UIManager : MonoBehaviour
+    public class UIManager: MonoBehaviour
     {
         public TMP_Text TurnPanel;
 

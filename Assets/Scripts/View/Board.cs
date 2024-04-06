@@ -1,40 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-using Managers;
 using Data;
-using Enums;
 
 namespace View
 {
     public class Board: MonoBehaviour
     {
-        [SerializeField] private Transform _cellsRoot;
-        [SerializeField] private Transform _piecesRoot;
+        public static Dictionary<string, GameObject> Prefabs;
+        
+        private static readonly Unit[,] BoardUnit = new Unit[Matrix.BoardSize, Matrix.BoardSize];
+
+        [SerializeField] private GameObject _baseUnit;
         [SerializeField] private GameObject _cellPrefab;
         [SerializeField] private List<GameObject> _piecesPrefabs;
-
-        public static Dictionary<string, GameObject> Prefabs;
-        public static List<CellBehaviour> CellBehaviours;
-        public static List<PieceBehaviour> PieceBehaviours;
-
-        private void Start()
+        
+        public void Awake()
         {
-            Initialize();
-            // Matrix.Debug();
-        }
-
-        private void Initialize()
-        {
-            InitializePiecesPrefabs();
             Matrix.Init();
-            CellBehaviours = CellBehaviour.InitBoard(_cellPrefab, _cellsRoot);
-            PieceBehaviours = PieceBehaviour.InitBoard(_piecesRoot);
-            ResetCellsTargetState();
+            InitPrefabs();
+            Init();
         }
-
-        private void InitializePiecesPrefabs()
+        
+        private void InitPrefabs()
         {
             Prefabs = new Dictionary<string, GameObject>();
         
@@ -42,38 +30,46 @@ namespace View
                 Prefabs.Add(prefab.name, prefab);
         }
 
-        #region View
-
-        public static void EnableCellsTargets(List<Piece> availableCells)
+        private void Init()
         {
-            if (availableCells == null) throw new NullReferenceException("Error: availableCells list isn't initialized, is there a probleme with <GetAvailableMoves> ?");
-
-            if (availableCells.Count == 0)
+            for (int column = 0; column < Matrix.BoardSize; column++)
             {
-                GameManager.ShowNoMovesAvailable();
-                return;
+                for (int row = 0; row < Matrix.BoardSize; row++)
+                {
+                    Piece matrixPiece = Matrix.GetPiece(column, row);
+                    
+                    Unit unit = Instantiate(_baseUnit, this.transform).GetComponent<Unit>();
+                    unit.name = (char)('A' + column) + (row + 1).ToString();
+                    
+                    unit.Coordinates = new Coordinates(column, row);
+                    unit.Piece = PieceBehaviour.Create(unit, matrixPiece);
+                    unit.Cell = CellBehaviour.Create(unit, _cellPrefab);
+                    BoardUnit[column, row] = unit;
+                }
             }
-
-            foreach (Piece piece in availableCells)
-            {
-                GameManager.GetPieceBehaviour(piece).Cell.IsTargetable(true);
-                GameManager.GetPieceBehaviour(piece).Cell.Highlight(HighlightType.Active);
-            }
+            
+            ResetCellsTargetState();
         }
 
-        private static void ResetCellsTargetState()
+        #region Utils
+
+        public static Unit GetUnitBehaviour(Coordinates coords)
         {
-            Matrix.ResetCellsTargetState();
+            return BoardUnit[coords.Column, coords.Row];
         }
-    
-        public static void UpdateView()
+
+        #endregion
+
+        #region Fluff
+
+        public static void ResetCellsTargetState()
         {
-            List<Piece> pieces = Matrix.GetAllPieces();
-        
-            foreach (Piece cell in pieces)
+            for (int column = 0; column < Matrix.BoardSize; column++)
             {
-                if (!cell.IsEmpty)
-                    GameManager.GetPieceBehaviour(cell).Cell.transform.position = cell.Coordinates.World;
+                for (int row = 0; row < Matrix.BoardSize; row++)
+                {
+                    BoardUnit[column, row].Cell.IsTargetable = false;
+                }
             }
         }
 
