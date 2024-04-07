@@ -6,6 +6,8 @@ namespace Data.Pieces
     public class Pawn : Piece
     {
         public Pawn(Side side, Coordinates coords) : base(side, coords) {}
+        
+        public Pawn(Pawn copy) : base(copy) {}
 
         public override float Heuristic
         {

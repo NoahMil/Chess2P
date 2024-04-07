@@ -7,7 +7,9 @@ namespace Data.Pieces
     public class King : Piece
     {
         public King(Side side, Coordinates coords) : base(side, coords) {}
-        
+
+        public King(King copy) : base(copy) {}
+
         public override float Heuristic
         {
             get

@@ -7,6 +7,8 @@ namespace Data.Pieces
     {
         public Bishop(Side side, Coordinates coords) : base(side, coords) {}
 
+        public Bishop(Bishop copy) : base(copy) {}
+
         public override float Heuristic
         {
             get

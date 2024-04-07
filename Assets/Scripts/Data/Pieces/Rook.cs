@@ -7,6 +7,8 @@ namespace Data.Pieces
     {
         public Rook(Side side, Coordinates coords) : base(side, coords) {}
         
+        public Rook(Rook copy) : base(copy) {}
+        
         public override float Heuristic
         {
             get

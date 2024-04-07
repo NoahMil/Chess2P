@@ -52,7 +52,7 @@ namespace View
 
         public static PieceBehaviour Create(Unit parentObject, Piece matrixPiece)
         {
-            if (matrixPiece == null) return null;
+            if (matrixPiece == null || matrixPiece.IsEmpty) return null;
 
             Vector3 rotation = new (0, matrixPiece.Side == Side.Light ? 0 : 180, 0);
             

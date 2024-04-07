@@ -7,6 +7,8 @@ namespace Data.Pieces
     {
         public Queen(Side side, Coordinates coords) : base(side, coords) {}
         
+        public Queen(Queen copy) : base(copy) {}
+        
         public override float Heuristic
         {
             get

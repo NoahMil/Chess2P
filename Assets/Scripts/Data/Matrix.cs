@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Reflection;
 using Enums;
 using View;
 
@@ -212,7 +212,18 @@ namespace Data
             {
                 for (int row = 0; row < BoardSize; row++)
                 {
-                    snapshot[column, row] = (Piece) Grid[column, row].Clone();
+                    if (Grid[column, row] == null || Grid[column, row].IsEmpty) {
+                        snapshot[column, row] = null;
+                        continue;
+                    }
+                    
+                    Type originalPieceType = Grid[column, row].GetType();
+                    ConstructorInfo copyCtor = originalPieceType.GetConstructor(new [] { originalPieceType });
+    
+                    if (copyCtor != null)
+                        snapshot[column, row] = (Piece)copyCtor.Invoke(new object[] { Grid[column, row] });
+                    else
+                        throw new NullReferenceException($"Unable to copy Grid[${column},${row}] of type ${originalPieceType}");
                 }
             }
 
@@ -223,11 +234,22 @@ namespace Data
         {
             Piece[,] duplicate = new Piece[BoardSize, BoardSize];
 
-            for (int row = 0; row < BoardSize; row++)
+            for (int column = 0; column < BoardSize; column++)
             {
-                for (int col = 0; col < BoardSize; col++)
+                for (int row = 0; row < BoardSize; row++)
                 {
-                    duplicate[row, col] = (Piece) snapshot[row, col].Clone();
+                    if (snapshot[column, row] == null || snapshot[column, row].IsEmpty) {
+                        duplicate[column, row] = null;
+                        continue;
+                    }
+                    
+                    Type snapshotPieceType = snapshot[column, row].GetType();
+                    ConstructorInfo copyCtor = snapshotPieceType.GetConstructor(new [] { snapshotPieceType });
+    
+                    if (copyCtor != null)
+                        duplicate[column, row] = (Piece)copyCtor.Invoke(new object[] { snapshot[column, row] });
+                    else
+                        throw new NullReferenceException($"Unable to copy snapshot[${column},${row}] of type ${snapshotPieceType}");
                 }
             }
 
