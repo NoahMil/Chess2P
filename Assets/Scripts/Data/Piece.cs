@@ -14,10 +14,9 @@ namespace Data
 
         public abstract float Heuristic { get; }
 
-        public bool IsEmpty => Side == Side.Empty;
         public string Type => this.GetType().Name;
-        public bool IsTheKing => this.GetType() == typeof(King) || !IsEmpty;
-        public bool IsNotTheKing => this.GetType() != typeof(King) || !IsEmpty;
+        public bool IsTheKing => this.GetType() == typeof(King);
+        public bool IsNotTheKing => this.GetType() != typeof(King);
         
         protected Piece(Side side, Coordinates coordinates)
         {
@@ -53,22 +52,20 @@ namespace Data
             };
         }
         
-        public abstract List<Piece> AvailableMoves(Coordinates coords);
+        public abstract List<Coordinates> AvailableMoves(Coordinates coords);
         
-        protected virtual bool ValidateCell(ICollection<Piece> availableMoves, Piece piece)
+        protected virtual bool ValidateCell(ICollection<Coordinates> availableMoves, Coordinates coordsToCheck)
         {
-            if (piece is null) throw new IndexOutOfRangeException($"{GetType().Name} shouldn't try to validate any cell out of board !");
-
-            if (!piece.IsEmpty)
+            Piece piece = Matrix.GetPiece(coordsToCheck);
+            
+            if (piece is not null) // If a piece exist at the provided coords...
             {
-                if (piece.Side != Side)
-                    availableMoves.Add(piece);
-
-                return false;
+                if (piece.Side != Side) availableMoves.Add(coordsToCheck); // ...add the coords to valid moves if it is an opponent's piece.
+                return false; // Tell the check system to stop here and don't check behind any piece found anwyay.
             }
-
-            availableMoves.Add(piece);
-            return true;
+            
+            availableMoves.Add(coordsToCheck); // No piece are in the coords so these coords are a valid move
+            return true; // Line of sight isn't blocked so the system can continue.
         }
 
         #region Equality and Copy

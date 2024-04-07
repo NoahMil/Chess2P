@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 using View;
+using Data;
 using Enums;
 
 namespace Managers
@@ -22,10 +22,7 @@ namespace Managers
         
         public static bool Checkmate { get; set; }
         public static bool Check { get; set; }
-
-        private static Unit _origin;
-        private static Unit _destination;
-        private static List<Unit> _moves;
+        
         private static bool _updateOnce;
 
         private bool _confirmEscape;
@@ -39,7 +36,7 @@ namespace Managers
 
         private void Start()
         {
-            StartCoroutine(StartGameLoop());
+            // StartCoroutine(StartGameLoop());
         }
 
         private void Update()
@@ -74,6 +71,12 @@ namespace Managers
                 
                 ChangeTurn();
             }
+        }
+
+        private void PerformMovement(Coordinates origin, Coordinates destination)
+        {
+            Matrix.Perform(CurrentPlayerTurn, origin, destination);
+            Board.UpdateView();
         }
         
         private void ChangeTurn()

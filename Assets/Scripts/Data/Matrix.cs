@@ -31,6 +31,11 @@ namespace Data
         {
             return GetPiece(coordinates.Column, coordinates.Row);
         }
+        
+        public static Piece GetPiece(Piece[,] grid, Coordinates coordinates)
+        {
+            return GetPiece(grid, coordinates.Column, coordinates.Row);
+        }
     
         /// <summary>
         /// Request a unique Piece from the original Grid array tied to the chess board
@@ -40,8 +45,8 @@ namespace Data
         /// <returns></returns>
         public static Piece GetPiece(int column, int row)
         {
-            if (column is < 0 or > 7) return null;
-            if (row is < 0 or > 7) return null;
+            if (column is < 0 or > 7) throw new IndexOutOfRangeException("Try to access a piece outside the board");
+            if (row is < 0 or > 7) throw new IndexOutOfRangeException("Try to access a piece outside the board");
         
             return Grid[column, row];
         }
@@ -55,12 +60,12 @@ namespace Data
         /// <returns></returns>
         public static Piece GetPiece(Piece[,] grid, int column, int row)
         {
-            if (column is < 0 or > 7) return null;
-            if (row is < 0 or > 7) return null;
+            if (column is < 0 or > 7) throw new IndexOutOfRangeException("Try to access a piece outside the board");
+            if (row is < 0 or > 7) throw new IndexOutOfRangeException("Try to access a piece outside the board");
         
             return grid[column, row];
         }
-
+        
         #endregion
 
         #region GetAllPieces()
@@ -199,9 +204,38 @@ namespace Data
 
         #endregion
 
-        public static List<Piece> GetMoves(Piece piece)
+        public static Coordinates GetCoordsByName(string cellName)
+        {
+            char columnLetter = cellName[0];
+            int row = int.Parse(cellName[1..]) - 1;
+            int column = columnLetter - 'A';
+
+            if (column is < 0 or > 7) throw new Exception($"Cell {cellName} doesn't exist.");
+            if (row is < 0 or > 7) throw new Exception($"Cell {cellName} doesn't exist.");
+
+            return new Coordinates(column, row);
+        }
+
+        public static List<Coordinates> GetMoves(Piece piece)
         {
             return piece.AvailableMoves(piece.Coordinates);
+        }
+
+        public static void Perform(Side player, Coordinates originCoords, Coordinates destinationCoords)
+        {
+            Piece origin = Grid[originCoords.Column, originCoords.Row];
+            Piece destination = Grid[destinationCoords.Column, destinationCoords.Row];
+            
+            if (origin == null || origin.Side != player)
+                throw new ArgumentException("Unexpected origin while Perfom(): origin can't be empty or from the opponent side");
+            if (destination is not null && destination.Equals(origin))
+                throw new ArgumentException("Unexpected destination while Perform(): destination can't be equals to origin.");
+            if (destination is not null && destination.Side == origin.Side)
+                throw new ArgumentException("Unexpected destination while Perform(): destination can't be an allied piece.");
+            
+            Grid[destinationCoords.Column, destinationCoords.Row] = origin;
+            Grid[destinationCoords.Column, destinationCoords.Row].Coordinates = destinationCoords;
+            Grid[originCoords.Column, originCoords.Row] = null;
         }
 
         public static Piece[,] GetCurrentGridSnapshot() // Deep Copy
@@ -212,7 +246,7 @@ namespace Data
             {
                 for (int row = 0; row < BoardSize; row++)
                 {
-                    if (Grid[column, row] == null || Grid[column, row].IsEmpty) {
+                    if (Grid[column, row] == null) {
                         snapshot[column, row] = null;
                         continue;
                     }
@@ -238,7 +272,7 @@ namespace Data
             {
                 for (int row = 0; row < BoardSize; row++)
                 {
-                    if (snapshot[column, row] == null || snapshot[column, row].IsEmpty) {
+                    if (snapshot[column, row] == null) {
                         duplicate[column, row] = null;
                         continue;
                     }

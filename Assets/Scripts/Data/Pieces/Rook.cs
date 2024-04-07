@@ -18,37 +18,37 @@ namespace Data.Pieces
             }
         }
 
-        public override List<Piece> AvailableMoves(Coordinates coordinates)
+        public override List<Coordinates> AvailableMoves(Coordinates coordinates)
         {
-            List<Piece> availableMoves = new List<Piece>();
+            List<Coordinates> availableMoves = new ();
             int currentColumn = coordinates.Column;
             int currentRow = coordinates.Row;
 
             for (int row = currentRow + 1; row < Matrix.BoardSize; row++) // Upward
             {
                 Piece upwardCell = Matrix.GetPiece(currentColumn, row);
-                if (!ValidateCell(availableMoves, upwardCell))
+                if (!ValidateCell(availableMoves, upwardCell.Coordinates))
                     break;
             }
             
             for (int row = currentRow - 1; row >= 0; row--) // Downward
             {
                 Piece downwardCell = Matrix.GetPiece(currentColumn, row);
-                if (!ValidateCell(availableMoves, downwardCell))
+                if (!ValidateCell(availableMoves, downwardCell.Coordinates))
                     break;
             }
             
             for (int column = currentColumn + 1; column < Matrix.BoardSize; column++) // Rightward
             {
                 Piece rightwardCell = Matrix.GetPiece(column, currentRow);
-                if (!ValidateCell(availableMoves, rightwardCell))
+                if (!ValidateCell(availableMoves, rightwardCell.Coordinates))
                     break;
             }
 
             for (int column = currentColumn - 1; column >= 0; column--) // Leftward
             {
                 Piece leftwardCell = Matrix.GetPiece(column, currentRow);
-                if (!ValidateCell(availableMoves, leftwardCell))
+                if (!ValidateCell(availableMoves, leftwardCell.Coordinates))
                     break;
             }
 

@@ -58,7 +58,7 @@ namespace View
             return unit;
         }
 
-        public void UpdateBoardView(Piece[,] grid)
+        public void UpdateView()
         {
             for (int column = 0; column < Matrix.BoardSize; column++)
             {

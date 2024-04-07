@@ -18,31 +18,38 @@ namespace Data.Pieces
             }
         }
 
-        public override List<Piece> AvailableMoves(Coordinates coordinates)
+        public override List<Coordinates> AvailableMoves(Coordinates coordinates)
         {
-            List<Piece> moves = new List<Piece>();
+            List<Coordinates> moves = new ();
             int currentColumn = coordinates.Column;
             int currentRow = coordinates.Row;
             int offset = (Side == Side.Light) ? 1 : -1;
             
-            Piece forward = Matrix.GetPiece(currentColumn, currentRow + offset);
-            Piece forwardLeft = Matrix.GetPiece(currentColumn - 1, currentRow + offset);
-            Piece forwardRight = Matrix.GetPiece(currentColumn + 1, currentRow + offset);
-            Piece forwardPush = Matrix.GetPiece(currentColumn, currentRow + offset * 2);
+            Piece forward, forwardLeft, forwardRight, forwardPush;
+
+            try {
+                forward = Matrix.GetPiece(currentColumn, currentRow + offset);
+                forwardLeft = Matrix.GetPiece(currentColumn - 1, currentRow + offset);
+                forwardRight = Matrix.GetPiece(currentColumn + 1, currentRow + offset);
+                forwardPush = Matrix.GetPiece(currentColumn, currentRow + offset * 2);
+            }
+            catch {
+                return null;
+            }
             
-            if (forwardLeft is { IsEmpty: false } && forwardLeft.Side != Side)
-                moves.Add(forwardLeft);
+            if (forwardLeft is not null && forwardLeft.Side != Side)
+                moves.Add(forwardLeft.Coordinates);
 
-            if (forwardRight is { IsEmpty: false } && forwardRight.Side != Side)
-                moves.Add(forwardRight);
+            if (forwardRight is not null && forwardRight.Side != Side)
+                moves.Add(forwardRight.Coordinates);
 
-            if (forward is { IsEmpty: true })
-                moves.Add(forward);
+            if (forward is null)
+                moves.Add(new Coordinates(currentColumn, currentRow + offset));
             else
                 return moves;
             
-            if (forwardPush is { IsEmpty: true } && !HasMoved)
-                moves.Add(forwardPush);
+            if (forwardPush is null && !HasMoved)
+                moves.Add(new Coordinates(currentColumn, currentRow + offset * 2));
             
             return moves;
         }

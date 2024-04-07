@@ -19,9 +19,9 @@ namespace Data.Pieces
             }
         }
 
-        public override List<Piece> AvailableMoves(Coordinates coordinates)
+        public override List<Coordinates> AvailableMoves(Coordinates coordinates)
         {
-            List<Piece> availableMoves = new List<Piece>();
+            List<Coordinates> availableMoves = new ();
             int currentColumn = coordinates.Column;
             int currentRow = coordinates.Row;
 
@@ -34,23 +34,24 @@ namespace Data.Pieces
                 int column = currentColumn + colOffsets[i];
 
                 Piece piece = Matrix.GetPiece(column, row);
-                ValidateCell(availableMoves, piece);
+                ValidateCell(availableMoves, piece.Coordinates);
             }
 
             return availableMoves;
         }
 
-        protected override bool ValidateCell(ICollection<Piece> availableMoves, Piece piece)
+        protected override bool ValidateCell(ICollection<Coordinates> availableMoves, Coordinates coordsToCheck)
         {
-            if (piece is null) return false; // King will check out-of-board cells, skipping them
-
-            if (piece.IsEmpty || (piece.Side != Side && piece.IsNotTheKing))
+            Piece piece = Matrix.GetPiece(coordsToCheck);
+            
+            if (piece is not null) // If a piece exist at the provided coords...
             {
-                availableMoves.Add(piece);
-                return true;
+                if (piece.Side != Side && piece.IsNotTheKing) availableMoves.Add(coordsToCheck); // ...add the coords to valid moves if it is an opponent's piece.
+                return false; // Tell the check system to stop here and don't check behind any piece found anwyay.
             }
-
-            return false;
+            
+            availableMoves.Add(coordsToCheck); // No piece are in the coords so these coords are a valid move
+            return false; // King to have line of sight.
         }
     }
 }

@@ -18,9 +18,9 @@ namespace Data.Pieces
             }
         }
 
-        public override List<Piece> AvailableMoves(Coordinates coordinates)
+        public override List<Coordinates> AvailableMoves(Coordinates coordinates)
         {
-            List<Piece> availableMoves = new List<Piece>();
+            List<Coordinates> availableMoves = new ();
             int currentColumn = coordinates.Column;
             int currentRow = coordinates.Row;
 
@@ -34,22 +34,24 @@ namespace Data.Pieces
 
                 Piece piece = Matrix.GetPiece(column, row);
                 
-                ValidateCell(availableMoves, piece);
+                ValidateCell(availableMoves, coordinates);
             }
 
             return availableMoves;
         }
 
-        protected override bool ValidateCell(ICollection<Piece> availableMoves, Piece piece)
+        protected override bool ValidateCell(ICollection<Coordinates> availableMoves, Coordinates coordsToCheck)
         {
-            if (piece == null) return false; // Knight will check out-of-board cells, skipping them
+            Piece piece = Matrix.GetPiece(coordsToCheck);
 
-            if (piece.IsEmpty || piece.Side != Side)
-            {
-                availableMoves.Add(piece);
+            if (piece == null) {
+                availableMoves.Add(coordsToCheck);
                 return true;
             }
 
+            if (piece.Side == Side) return false;
+            
+            availableMoves.Add(coordsToCheck);
             return false;
         }
     }
