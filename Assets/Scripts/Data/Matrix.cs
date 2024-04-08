@@ -237,6 +237,23 @@ namespace Data
             Grid[destinationCoords.Column, destinationCoords.Row].Coordinates = destinationCoords;
             Grid[originCoords.Column, originCoords.Row] = null;
         }
+        
+        public static void VirtualPerform(Piece[,] matrixCopy, Side player, Coordinates originCoords, Coordinates destinationCoords)
+        {
+            Piece origin = matrixCopy[originCoords.Column, originCoords.Row];
+            Piece destination = matrixCopy[destinationCoords.Column, destinationCoords.Row];
+            
+            if (origin == null || origin.Side != player)
+                throw new ArgumentException("Unexpected origin while Perfom(): origin can't be empty or from the opponent side");
+            if (destination is not null && destination.Equals(origin))
+                throw new ArgumentException("Unexpected destination while Perform(): destination can't be equals to origin.");
+            if (destination is not null && destination.Side == origin.Side)
+                throw new ArgumentException("Unexpected destination while Perform(): destination can't be an allied piece.");
+            
+            matrixCopy[destinationCoords.Column, destinationCoords.Row] = origin;
+            matrixCopy[destinationCoords.Column, destinationCoords.Row].Coordinates = destinationCoords;
+            matrixCopy[originCoords.Column, originCoords.Row] = null;
+        }
 
         public static Piece[,] GetCurrentGridSnapshot() // Deep Copy
         {

@@ -1,38 +1,50 @@
 using System.Collections.Generic;
-
 using Data;
 using Enums;
 using Managers;
 
 public class Node
-{
-    /*
+{ 
+    public  Side OpponentTurn => (_owner == Side.Light ? Side.Dark : Side.Light);
     private Side _owner;
-    public Side _turn;
-    private Cell[,] _matrix;
-
-    public Node(Side owner, Side turn, Cell[,] matrix)
+    private Piece[,] _matrix;
+    private Coordinates _destination;
+    private Coordinates _origin;
+    public Coordinates Destination
     {
-        _owner = owner;
-        _turn = turn;
-        _matrix = matrix;
+        get => _destination;
+        set => _destination = value;
+    }
+    public Coordinates Origin
+    {
+        get => _origin;
+        set => _origin = value;
     }
 
-    public int GetHeuristicValue()
+
+    public Node(Side owner, Piece[,] matrix, Coordinates origin, Coordinates destination)
     {
-        int heuristicValue = 0;
-        foreach (Cell cell in _matrix)
+        _owner = owner;
+        _matrix = matrix;
+        _origin = origin;
+        _destination = destination;
+    }
+
+    public float GetHeuristicValue()
+    {
+        float heuristicValue = 0f;
+        foreach (Piece piece in _matrix)
         {
-            if (cell == null) continue;
-            if (cell.Occupant == null) continue;
+            if (piece == null) continue;
+            if (piece.Side != GameManager.CurrentPlayerTurn) continue;
 
             //  heuristicValue = cell.Occupant.Side == _owner ? cell.Occupant.HeuristicScore : -cell.Occupant.HeuristicScore;
-            if (cell.Occupant.Side == _owner)
-                heuristicValue += cell.Occupant.HeuristicScore;
+            if (piece.Side == _owner)
+                heuristicValue += piece.Heuristic;
             else
-                heuristicValue -= cell.Occupant.HeuristicScore;
+                heuristicValue -= piece.Heuristic;
         }
-
+        
         return heuristicValue;
     }
 
@@ -45,36 +57,32 @@ public class Node
     {
         List<Node> nodeList = new List<Node>();
 
-        foreach (Cell cell in _matrix)
+        foreach (Piece piece in _matrix)
         {
-            if (cell == null) continue;
-            if (cell.Occupant == null) continue;
-            if (cell.Occupant.Side == _turn) continue;
+            if (piece == null) continue;
+            if (piece.Side != OpponentTurn) continue;
             
             // Je dois récupérer le mouvement de chaque Occupant dont c'est le tour et créer un nouveau node basé sur
             // celui du node actuelle et jouer le coup sur celui ci
             // 1 - Récupérer la liste des muvement possible pour cette matrice
-            List<Cell> moves = cell.Occupant.AvailableMoves(cell.Coordinates);
+            List<Coordinates> moves = piece.AvailableMoves(piece.Coordinates);
 
-            foreach (Cell move in moves)
+            foreach (Coordinates move in moves)
             {
                 // 2 - Copier la matrice actuel
-                Cell[,] newMatrix = Matrix.DuplicateSnapshot(_matrix);
+                Piece[,] newMatrix = Matrix.DuplicateSnapshot(_matrix);
                 
                 // 3 - Jouer le mouvement sur la matrice actuel
-                GameManager.VirtualResolve(newMatrix, cell, move);
+                Matrix.VirtualPerform(newMatrix, _owner, piece.Coordinates, move);
                 
                 // 4 - Créer un Node contenant tout les information nécessaire (la nouvelle matrice, les sides)
-                Side nextTurn = _turn == Side.Light ? Side.Dark : Side.Light;
-                Node childNode = new Node(_owner, nextTurn, newMatrix);
+                Side nextTurn = OpponentTurn == Side.Light ? Side.Dark : Side.Light;
+                Node childNode = new Node(OpponentTurn, newMatrix, piece.Coordinates, move);
 
                 // 5 - Ajouter le node a la liste des enfants à retourner
                 nodeList.Add(childNode);
             }
         }
         return nodeList;
-        
     }
-    */
-    
 }

@@ -73,12 +73,12 @@ namespace Managers
             }
         }
 
-        private void PerformMovement(Coordinates origin, Coordinates destination)
+        public void PerformMovement(Coordinates origin, Coordinates destination)
         {
             Matrix.Perform(CurrentPlayerTurn, origin, destination);
             Board.UpdateView();
         }
-        
+
         private void ChangeTurn()
         {
             CurrentPlayerTurn = OpponentTurn;

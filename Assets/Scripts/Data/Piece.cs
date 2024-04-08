@@ -27,6 +27,7 @@ namespace Data
 
         protected Piece(Piece copy)
         {
+            this.Coordinates = copy.Coordinates;
             this.Side = copy.Side;
             this.HasMoved = copy.HasMoved;
         }
