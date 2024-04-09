@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Data;
 using Enums;
 using Managers;
+using UnityEngine;
 
 public class Node
 { 
@@ -52,7 +53,7 @@ public class Node
     {
         return GetChilds().Count == 0;
     }
-
+    
     public List<Node> GetChilds()
     {
         List<Node> nodeList = new List<Node>();
@@ -66,7 +67,7 @@ public class Node
             // celui du node actuelle et jouer le coup sur celui ci
             // 1 - Récupérer la liste des muvement possible pour cette matrice
             List<Coordinates> moves = piece.AvailableMoves(piece.Coordinates);
-
+            Debug.Log(moves);
             foreach (Coordinates move in moves)
             {
                 // 2 - Copier la matrice actuel
@@ -78,6 +79,7 @@ public class Node
                 // 4 - Créer un Node contenant tout les information nécessaire (la nouvelle matrice, les sides)
                 Side nextTurn = OpponentTurn == Side.Light ? Side.Dark : Side.Light;
                 Node childNode = new Node(OpponentTurn, newMatrix, piece.Coordinates, move);
+                
 
                 // 5 - Ajouter le node a la liste des enfants à retourner
                 nodeList.Add(childNode);

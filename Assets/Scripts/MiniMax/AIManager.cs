@@ -18,13 +18,13 @@ namespace MiniMax
             Node firstNode = new Node(GameManager.CurrentPlayerTurn, Matrix.GetCurrentGridSnapshot(),new Coordinates(-1,-1),new Coordinates(-1,-1));
             Node bestChild = null;
          
-            foreach (Node child in firstNode.GetChilds()) // first Getchilds for get the cell destination
+            foreach (Node child in firstNode.GetChilds()) 
             {
                 float score = MinMax(firstNode, 1, false);
                 if (bestChild == null || score > bestChild.GetHeuristicValue()) {
                     bestChild = child;
                 }
-                else if (score == bestChild.GetHeuristicValue() && Random.Range(0,1f) == 0)
+                else if (score == bestChild.GetHeuristicValue() && Random.Range(0,2f) == 0)
                 {
                     bestChild = child;
                 }
