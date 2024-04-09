@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Enums;
+
 using View;
+using AI;
+using Enums;
 
 namespace Data
 {
@@ -218,7 +220,7 @@ namespace Data
 
         public static List<Coordinates> GetMoves(Piece piece)
         {
-            return piece.AvailableMoves(piece.Coordinates);
+            return piece.AvailableMoves();
         }
 
         public static void Perform(Side player, Coordinates originCoords, Coordinates destinationCoords)
@@ -236,23 +238,6 @@ namespace Data
             Grid[destinationCoords.Column, destinationCoords.Row] = origin;
             Grid[destinationCoords.Column, destinationCoords.Row].Coordinates = destinationCoords;
             Grid[originCoords.Column, originCoords.Row] = null;
-        }
-        
-        public static void VirtualPerform(Piece[,] snapshot, Side player, Coordinates originCoords, Coordinates destinationCoords)
-        {
-            Piece origin = snapshot[originCoords.Column, originCoords.Row];
-            Piece destination = snapshot[destinationCoords.Column, destinationCoords.Row];
-            
-            if (origin == null || origin.Side != player)
-                throw new ArgumentException("Unexpected origin while Perfom(): origin can't be empty or from the opponent side");
-            if (destination is not null && destination.Equals(origin))
-                throw new ArgumentException("Unexpected destination while Perform(): destination can't be equals to origin.");
-            if (destination is not null && destination.Side == origin.Side)
-                throw new ArgumentException("Unexpected destination while Perform(): destination can't be an allied piece.");
-            
-            snapshot[destinationCoords.Column, destinationCoords.Row] = origin;
-            snapshot[destinationCoords.Column, destinationCoords.Row].Coordinates = destinationCoords;
-            snapshot[originCoords.Column, originCoords.Row] = null;
         }
 
         public static Piece[,] GetCurrentGridSnapshot() // Deep Copy
