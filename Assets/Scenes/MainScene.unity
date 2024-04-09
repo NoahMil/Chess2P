@@ -6177,7 +6177,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Board: {fileID: 2155730284398455825}
-  AIDepth: 0
+  AIDepth: 1
   EnableStepByStep: 1
 --- !u!114 &1845201775
 MonoBehaviour:

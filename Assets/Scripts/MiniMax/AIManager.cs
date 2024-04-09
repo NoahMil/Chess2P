@@ -15,7 +15,7 @@ namespace MiniMax
         [ContextMenu("Think")]
         public void Think()
         {
-            Node firstNode = new Node(GameManager.CurrentPlayerTurn, Matrix.GetCurrentGridSnapshot(),new Coordinates(-1,-1),new Coordinates(-1,-1));
+            Node firstNode = new Node(GameManager.CurrentPlayerTurn,Matrix.GetCurrentGridSnapshot(),new Coordinates(-1,-1),new Coordinates(-1,-1), true);
             Node bestChild = null;
          
             foreach (Node child in firstNode.GetChilds()) 

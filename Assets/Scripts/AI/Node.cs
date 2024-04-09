@@ -22,7 +22,7 @@ namespace AI
 
         public Coordinates Piece { get; private set; }
         public Coordinates Destination { get; private set; }
-        
+
         public Node(Node parent, Side turn, Piece[,] grid = null)
         {
             Turn = turn;
@@ -39,8 +39,8 @@ namespace AI
 
         private List<Node> GenerateChildren()
         {
-            List<Node> children = new ();
-            
+            List<Node> children = new();
+
             List<Piece> sidePieces = Matrix.GetAllPieces(Grid, Turn);
 
             foreach (Piece piece in sidePieces)
@@ -51,9 +51,13 @@ namespace AI
                     VirtualPerform(child);
                 }
             }
+
+            return children;
         }
         
-        /// <summary>
+    
+
+    /// <summary>
         /// Take a node, perform the move it's represent and update it's Grid for future reference
         /// </summary>
         /// <param name="node">The Node object to perform the move</param>
