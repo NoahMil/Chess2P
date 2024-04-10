@@ -5,9 +5,9 @@ namespace Data.Pieces
 {
     public class Pawn : Piece
     {
-        public Pawn(Side side, Coordinates coords) : base(side, coords) {}
+        public Pawn(Side side, Coordinates coords, Piece[,] reference) : base(side, coords, reference) {}
         
-        public Pawn(Pawn copy) : base(copy) {}
+        public Pawn(Pawn copy, Piece[,] reference) : base(copy, reference) {}
 
         public override float Heuristic
         {
@@ -26,16 +26,11 @@ namespace Data.Pieces
             int offset = (Side == Side.Light) ? 1 : -1;
             
             Piece forward, forwardLeft, forwardRight, forwardPush;
-
-            try {
-                forward = Matrix.GetPiece(currentColumn, currentRow + offset);
-                forwardLeft = Matrix.GetPiece(currentColumn - 1, currentRow + offset);
-                forwardRight = Matrix.GetPiece(currentColumn + 1, currentRow + offset);
-                forwardPush = Matrix.GetPiece(currentColumn, currentRow + offset * 2);
-            }
-            catch {
-                return null;
-            }
+            
+            forward = Matrix.GetPiece(Reference,currentColumn, currentRow + offset);
+            forwardLeft = Matrix.GetPiece(Reference,currentColumn - 1, currentRow + offset);
+            forwardRight = Matrix.GetPiece(Reference,currentColumn + 1, currentRow + offset);
+            forwardPush = Matrix.GetPiece(Reference,currentColumn, currentRow + offset * 2);
             
             if (forwardLeft is not null && forwardLeft.Side != Side)
                 moves.Add(forwardLeft.Coordinates);
@@ -43,7 +38,7 @@ namespace Data.Pieces
             if (forwardRight is not null && forwardRight.Side != Side)
                 moves.Add(forwardRight.Coordinates);
 
-            if (forward is null)
+            if (forward is null && (currentColumn is < 0 or > 7 || currentRow is < 0 or > 7)) 
                 moves.Add(new Coordinates(currentColumn, currentRow + offset));
             else
                 return moves;
@@ -51,7 +46,7 @@ namespace Data.Pieces
             if (forwardPush is null && !HasMoved)
                 moves.Add(new Coordinates(currentColumn, currentRow + offset * 2));
 
-            ValidateMoves(moves);
+            ValidateMoves(ref moves);
             return moves;
         }
     }

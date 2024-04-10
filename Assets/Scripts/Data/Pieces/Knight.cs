@@ -5,9 +5,9 @@ namespace Data.Pieces
 {
     public class Knight : Piece
     {
-        public Knight(Side side, Coordinates coords) : base(side, coords) {}
+        public Knight(Side side, Coordinates coords, Piece[,] reference) : base(side, coords, reference) {}
         
-        public Knight(Knight copy) : base(copy) {}
+        public Knight(Knight copy, Piece[,] reference) : base(copy, reference) {}
         
         public override float Heuristic
         {
@@ -35,8 +35,29 @@ namespace Data.Pieces
                 availableMoves.Add(new Coordinates(column, row));
             }
 
-            ValidateMoves(availableMoves);
+            this.ValidateMoves(ref availableMoves);
             return availableMoves;
         }
+
+        protected override bool ValidateMoves(ref List<Coordinates> availableMoves)
+        {
+            List<Coordinates> trollList = new List<Coordinates>();
+
+            foreach (Coordinates move in availableMoves)
+            {
+                if (move.Column is >= 0 and <= 7 && move.Row is >= 0 and <= 7)
+                {
+                    Piece destination = Matrix.GetPiece(Reference, move);
+                    if (destination == null || (destination.Side != Side))
+                    {
+                        trollList.Add(move);
+                        return true;
+                    }
+                }
+            }
+            availableMoves = trollList;
+            return false;
+        }
     }
+
 }

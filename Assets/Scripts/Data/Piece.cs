@@ -9,9 +9,11 @@ namespace Data
 {
     public abstract class Piece : IEquatable<Piece>, ICloneable
     {
+        public Piece[,] Reference { get; private set; }
         public Coordinates Coordinates { get; set; }
         public Side Side { get; set; }
         public bool HasMoved { get; set; }
+        
 
         public abstract float Heuristic { get; }
 
@@ -19,15 +21,17 @@ namespace Data
         public bool IsTheKing => this.GetType() == typeof(King);
         public bool IsNotTheKing => this.GetType() != typeof(King);
         
-        protected Piece(Side side, Coordinates coordinates)
+        protected Piece(Side side, Coordinates coordinates, Piece[,] reference)
         {
             Coordinates = coordinates;
+            Reference = reference;
             Side = side;
             HasMoved = false;
         }
 
-        protected Piece(Piece copy)
+        protected Piece(Piece copy, Piece[,] reference)
         {
+            Reference = reference;
             this.Coordinates = copy.Coordinates;
             this.Side = copy.Side;
             this.HasMoved = copy.HasMoved;
@@ -37,18 +41,18 @@ namespace Data
         {
             return prefabName switch
             {
-                "LightPawn"   => new Pawn   (Side.Light, coordinates),
-                "LightRook"   => new Rook   (Side.Light, coordinates),
-                "LightKnight" => new Knight (Side.Light, coordinates),
-                "LightBishop" => new Bishop (Side.Light, coordinates),
-                "LightQueen"  => new Queen  (Side.Light, coordinates),
-                "LightKing"   => new King   (Side.Light, coordinates),
-                "DarkPawn"    => new Pawn   (Side.Dark, coordinates),
-                "DarkRook"    => new Rook   (Side.Dark, coordinates),
-                "DarkKnight"  => new Knight (Side.Dark, coordinates),
-                "DarkBishop"  => new Bishop (Side.Dark, coordinates),
-                "DarkQueen"   => new Queen  (Side.Dark, coordinates),
-                "DarkKing"    => new King   (Side.Dark, coordinates),
+                "LightPawn"   => new Pawn   (Side.Light, coordinates, Matrix.Grid),
+                "LightRook"   => new Rook   (Side.Light, coordinates, Matrix.Grid),
+                "LightKnight" => new Knight (Side.Light, coordinates, Matrix.Grid),
+                "LightBishop" => new Bishop (Side.Light, coordinates, Matrix.Grid),
+                "LightQueen"  => new Queen  (Side.Light, coordinates, Matrix.Grid),
+                "LightKing"   => new King   (Side.Light, coordinates, Matrix.Grid),
+                "DarkPawn"    => new Pawn   (Side.Dark, coordinates, Matrix.Grid),
+                "DarkRook"    => new Rook   (Side.Dark, coordinates, Matrix.Grid),
+                "DarkKnight"  => new Knight (Side.Dark, coordinates, Matrix.Grid),
+                "DarkBishop"  => new Bishop (Side.Dark, coordinates, Matrix.Grid),
+                "DarkQueen"   => new Queen  (Side.Dark, coordinates, Matrix.Grid),
+                "DarkKing"    => new King   (Side.Dark, coordinates, Matrix.Grid),
                 
                 _ => throw new ArgumentOutOfRangeException(prefabName, "Invalid piece name provided for Creation")
             };
@@ -56,7 +60,7 @@ namespace Data
         
         public abstract List<Coordinates> AvailableMoves();
         
-        protected virtual bool ValidateMoves(List<Coordinates> availableMoves)
+        protected virtual bool ValidateMoves(ref List<Coordinates> availableMoves)
         {
             int availableMoveSize = availableMoves.Count;
             
@@ -86,6 +90,12 @@ namespace Data
 
             return true;
         }
+
+        protected virtual int ValidateSingleMove(Coordinates coordinates)
+        {
+            return 0;
+        }
+        
 
         #region Equality and Copy
 

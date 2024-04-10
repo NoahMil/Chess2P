@@ -5,9 +5,9 @@ namespace Data.Pieces
 {
     public class Bishop : Piece
     {
-        public Bishop(Side side, Coordinates coords) : base(side, coords) {}
+        public Bishop(Side side, Coordinates coords, Piece[,] reference) : base(side, coords, reference) {}
 
-        public Bishop(Bishop copy) : base(copy) {}
+        public Bishop(Bishop copy, Piece[,] reference) : base(copy, reference) {}
 
         public override float Heuristic
         {
@@ -36,7 +36,7 @@ namespace Data.Pieces
             for (int column = currentColumn - 1, row = currentRow - 1; row >= 0 && column >= 0; row--, column--) // Downward-left
                 availableMoves.Add(new Coordinates(column, row));
 
-            ValidateMoves(availableMoves);
+            ValidateMoves(ref availableMoves);
             
             return availableMoves;
         }

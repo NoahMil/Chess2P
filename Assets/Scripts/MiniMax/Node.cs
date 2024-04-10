@@ -56,8 +56,6 @@ public class Node
         
         foreach (Piece piece in ownerPiece)
         {
-            if (piece.Side == OpponentTurn) throw new Exception("Unexpected troll");
-            
             // Je dois récupérer le mouvement de chaque Occupant dont c'est le tour et créer un nouveau node basé sur
             // celui du node actuelle et jouer le coup sur celui ci
             // 1 - Récupérer la liste des muvement possible pour cette matrice
@@ -68,13 +66,11 @@ public class Node
                 // 2 - Copier la matrice actuel
                 Piece[,] newMatrix = Data.Matrix.DuplicateSnapshot(Matrix);
                 
-                // 4 - Créer un Node contenant tout les information nécessaire (la nouvelle matrice, les sides)
-                Node childNode = new Node(OpponentTurn, newMatrix, piece.Coordinates, move);
+                // 3 - Créer un Node contenant tout les information nécessaire (la nouvelle matrice, les sides)
+                Node childNode = new Node(IsRoot ? Owner : OpponentTurn, newMatrix, piece.Coordinates, move);
 
-                // 3 - Jouer le mouvement sur la matrice actuel
+                // 4 - Jouer le mouvement sur la matrice actuel
                 Data.Matrix.VirtualPerform(childNode);
-                
-                Side nextTurn = OpponentTurn == Side.Light ? Side.Dark : Side.Light;
                 
                 // 5 - Ajouter le node a la liste des enfants à retourner
                 nodeList.Add(childNode);

@@ -6,9 +6,9 @@ namespace Data.Pieces
 {
     public class King : Piece
     {
-        public King(Side side, Coordinates coords) : base(side, coords) {}
+        public King(Side side, Coordinates coords, Piece[,] reference) : base(side, coords, reference) {}
 
-        public King(King copy) : base(copy) {}
+        public King(King copy, Piece[,] reference) : base(copy, reference) {}
 
         public override float Heuristic
         {
@@ -36,7 +36,7 @@ namespace Data.Pieces
                 availableMoves.Add(new Coordinates(column, row));
             }
 
-            ValidateMoves(availableMoves);
+            ValidateMoves(ref availableMoves);
             return availableMoves;
         }
     }

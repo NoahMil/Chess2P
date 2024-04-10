@@ -62,8 +62,9 @@ namespace Data
         /// <returns></returns>
         public static Piece GetPiece(Piece[,] grid, int column, int row)
         {
-            if (column is < 0 or > 7) throw new IndexOutOfRangeException("Try to access a piece outside the board");
-            if (row is < 0 or > 7) throw new IndexOutOfRangeException("Try to access a piece outside the board");
+            if (column is < 0 or > 7) return null; //throw new IndexOutOfRangeException("Try to access a piece outside the board");
+            if (row is < 0 or > 7)
+                return null;//throw new IndexOutOfRangeException("Try to access a piece outside the board");
         
             return grid[column, row];
         }
@@ -262,7 +263,7 @@ namespace Data
             Piece origin = node.Matrix[node.Origin.Column, node.Origin.Row];
             Piece destination = node.Matrix[node.Destination.Column, node.Destination.Row];
             
-            if (origin == null || origin.Side == node.Owner)
+            if (origin == null || origin.Side != node.Owner)
                 throw new ArgumentException("Unexpected origin while Perfom(): origin can't be empty or from the opponent side");
             if (destination is not null && destination.Equals(origin))
                 throw new ArgumentException("Unexpected destination while Perform(): destination can't be equals to origin.");
@@ -288,10 +289,10 @@ namespace Data
                     }
                     
                     Type originalPieceType = Grid[column, row].GetType();
-                    ConstructorInfo copyCtor = originalPieceType.GetConstructor(new [] { originalPieceType });
+                    ConstructorInfo copyCtor = originalPieceType.GetConstructor(new [] { originalPieceType, typeof(Piece[,])});
     
                     if (copyCtor != null)
-                        snapshot[column, row] = (Piece)copyCtor.Invoke(new object[] { Grid[column, row] });
+                        snapshot[column, row] = (Piece)copyCtor.Invoke(new object[] { Grid[column, row], snapshot });
                     else
                         throw new NullReferenceException($"Unable to copy Grid[${column},${row}] of type ${originalPieceType}");
                 }
@@ -313,13 +314,13 @@ namespace Data
                         continue;
                     }
                     
-                    Type snapshotPieceType = snapshot[column, row].GetType();
-                    ConstructorInfo copyCtor = snapshotPieceType.GetConstructor(new [] { snapshotPieceType });
+                    Type originalPieceType = snapshot[column, row].GetType();
+                    ConstructorInfo copyCtor = originalPieceType.GetConstructor(new [] { originalPieceType, typeof(Piece[,])});
     
                     if (copyCtor != null)
-                        duplicate[column, row] = (Piece)copyCtor.Invoke(new object[] { snapshot[column, row] });
+                        duplicate[column, row] = (Piece)copyCtor.Invoke(new object[] { snapshot[column, row], duplicate });
                     else
-                        throw new NullReferenceException($"Unable to copy snapshot[${column},${row}] of type ${snapshotPieceType}");
+                        throw new NullReferenceException($"Unable to copy Grid[${column},${row}] of type ${originalPieceType}");
                 }
             }
 

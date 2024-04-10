@@ -5,9 +5,9 @@ namespace Data.Pieces
 {
     public class Queen : Piece
     {
-        public Queen(Side side, Coordinates coords) : base(side, coords) {}
+        public Queen(Side side, Coordinates coords, Piece[,] reference) : base(side, coords, reference) {}
         
-        public Queen(Queen copy) : base(copy) {}
+        public Queen(Queen copy, Piece[,] reference) : base(copy, reference) {}
         
         public override float Heuristic
         {
@@ -27,7 +27,7 @@ namespace Data.Pieces
             GetAlignedCells(availableMoves, currentColumn, currentRow);
             GetDiagonalCells(availableMoves, currentColumn, currentRow);
 
-            ValidateMoves(availableMoves);
+            ValidateMoves(ref availableMoves);
             return availableMoves;
         }
         
