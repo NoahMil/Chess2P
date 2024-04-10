@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using Enums;
 using Data.Pieces;
+using Unity.VisualScripting;
 
 namespace Data
 {
@@ -55,12 +56,17 @@ namespace Data
         
         public abstract List<Coordinates> AvailableMoves();
         
-        protected virtual bool ValidateMoves(ICollection<Coordinates> availableMoves)
+        protected virtual bool ValidateMoves(List<Coordinates> availableMoves)
         {
-            foreach (Coordinates move in availableMoves) // Foreach valid moves detected, double-check the validity.
+            int availableMoveSize = availableMoves.Count;
+            
+            for (int index = 0; index < availableMoveSize; index++) // Foreach valid moves detected, double-check the validity.
             {
+                Coordinates move = availableMoves[index];
+                
                 if (move.Column is < 0 or > 7 || move.Row is < 0 or > 7) { // Filters-out falty moves outside the board and skip;
                     availableMoves.Remove(move);
+                    availableMoveSize = availableMoves.Count;
                     continue;
                 }
                 
@@ -68,7 +74,10 @@ namespace Data
 
                 if (destinationPiece is not null) // If a piece exist at the provided coords...
                 {
-                    if (destinationPiece.Side == Side || destinationPiece.IsTheKing) availableMoves.Remove(move); // ...exclude it, if it's a allied piece.
+                    if (destinationPiece.Side == Side || destinationPiece.IsTheKing) {
+                        availableMoves.Remove(move); // ...exclude it, if it's a allied piece.
+                        availableMoveSize = availableMoves.Count;
+                    }
                     continue; // Skip to the next move;
                 }
             

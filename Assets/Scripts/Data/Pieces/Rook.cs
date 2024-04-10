@@ -25,17 +25,25 @@ namespace Data.Pieces
             int currentRow = this.Coordinates.Row;
 
             for (int row = currentRow + 1; row < Matrix.BoardSize; row++) // Upward
-                availableMoves.Add(new Coordinates(currentColumn, currentRow));
-            
+            { 
+                availableMoves.Add(new Coordinates(currentColumn, row));
+            }
+
             for (int row = currentRow - 1; row >= 0; row--) // Downward
-                availableMoves.Add(new Coordinates(currentColumn, currentRow));
-            
+            {
+                availableMoves.Add(new Coordinates(currentColumn, row));
+            }
+
             for (int column = currentColumn + 1; column < Matrix.BoardSize; column++) // Rightward
-                availableMoves.Add(new Coordinates(currentColumn, currentRow));
+            {
+                availableMoves.Add(new Coordinates(column, currentRow));
+            }
 
             for (int column = currentColumn - 1; column >= 0; column--) // Leftward
-                availableMoves.Add(new Coordinates(currentColumn, currentRow));
-
+            {
+                availableMoves.Add(new Coordinates(column, currentRow));
+            }
+            
             ValidateMoves(availableMoves);
             return availableMoves;
         }

@@ -262,7 +262,7 @@ namespace Data
             Piece origin = node.Matrix[node.Origin.Column, node.Origin.Row];
             Piece destination = node.Matrix[node.Destination.Column, node.Destination.Row];
             
-            if (origin == null || origin.Side != node.Owner)
+            if (origin == null || origin.Side == node.Owner)
                 throw new ArgumentException("Unexpected origin while Perfom(): origin can't be empty or from the opponent side");
             if (destination is not null && destination.Equals(origin))
                 throw new ArgumentException("Unexpected destination while Perform(): destination can't be equals to origin.");
